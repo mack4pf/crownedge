@@ -9,7 +9,7 @@ import {
     Clock, ShieldCheck, TrendingUp, DollarSign,
     RefreshCw, ChevronRight, Menu, X, ArrowUpRight,
     MessageSquare, Send, FileText, ChevronDown, LayoutDashboard,
-    Image as ImageIcon, Paperclip, ChevronLeft, Radio
+    Image as ImageIcon, Paperclip, ChevronLeft, Radio, Cpu
 } from "lucide-react";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
@@ -25,6 +25,11 @@ export default function AdminDashboardClient({ users, deposits, withdrawals, set
     // Modals
     const [selectedUserForMoney, setSelectedUserForMoney] = useState<any>(null);
     const [selectedUserForMsg, setSelectedUserForMsg] = useState<any>(null);
+
+    // AI Trader State
+    const [selectedUserForAI, setSelectedUserForAI] = useState<any>(null);
+    const [aiProfitAmt, setAiProfitAmt] = useState("");
+    const [aiActive, setAiActive] = useState(false);
 
     // Messaging (One-way Notification) State
     const [msgSubject, setMsgSubject] = useState("");
@@ -240,8 +245,41 @@ export default function AdminDashboardClient({ users, deposits, withdrawals, set
             setMsgSubject("");
             setMsgTitle("");
             setMsgBody("");
-        } else {
-            showMessage("Failed to send message", "error");
+        }
+    };
+
+    const handleUpdateAISettings = async () => {
+        if (!selectedUserForAI) return;
+        const res = await fetch("/api/admin/users/ai-trader/update", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+                userId: selectedUserForAI._id,
+                aiTraderActive: aiActive,
+                aiProfitTarget: parseFloat(aiProfitAmt) || 0
+            })
+        });
+        if (res.ok) {
+            showMessage("AI Trader settings synchronization complete!");
+            setSelectedUserForAI(null);
+            setTimeout(() => window.location.reload(), 1500);
+        }
+    };
+
+    const handleExecuteAIProfit = async () => {
+        if (!selectedUserForAI) return;
+        const res = await fetch("/api/admin/users/ai-trader/execute", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+                userId: selectedUserForAI._id,
+                amount: parseFloat(aiProfitAmt)
+            })
+        });
+        if (res.ok) {
+            showMessage("AI Trader Profit TP executed successfully!");
+            setSelectedUserForAI(null);
+            setTimeout(() => window.location.reload(), 1500);
         }
     };
 
@@ -545,6 +583,16 @@ export default function AdminDashboardClient({ users, deposits, withdrawals, set
                                                     </div>
                                                     <button onClick={() => setSelectedUserForMoney(u)} className="w-12 h-12 rounded-2xl bg-brand-gold/10 text-brand-gold border border-brand-gold/20 flex items-center justify-center hover:bg-brand-gold hover:text-black transition-all">
                                                         <DollarSign size={20} />
+                                                    </button>
+                                                    <button
+                                                        onClick={() => {
+                                                            setSelectedUserForAI(u);
+                                                            setAiActive(u.aiTraderActive);
+                                                            setAiProfitAmt(u.aiProfitTarget?.toString() || "");
+                                                        }}
+                                                        className={`w-12 h-12 rounded-2xl border flex items-center justify-center transition-all ${u.aiTraderActive ? 'bg-purple-600/20 text-purple-400 border-purple-500/30' : 'bg-white/5 text-zinc-600 border-white/5 hover:bg-white/10'}`}
+                                                    >
+                                                        <Cpu size={20} />
                                                     </button>
                                                 </div>
                                                 <button
@@ -936,6 +984,73 @@ export default function AdminDashboardClient({ users, deposits, withdrawals, set
                                     {isSendingMsg ? <RefreshCw className="animate-spin" size={20} /> : <Send size={20} />}
                                     {isSendingMsg ? "TRANSMITTING..." : "DISPATCH ALERT"}
                                 </button>
+                            </div>
+                        </motion.div>
+                    </motion.div>
+                )}
+            </AnimatePresence>
+
+            {/* Modal: AI Trader Control */}
+            <AnimatePresence>
+                {selectedUserForAI && (
+                    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 z-[100] flex items-center justify-center p-6 bg-black/95 backdrop-blur-3xl">
+                        <motion.div initial={{ scale: 0.9, y: 30 }} animate={{ scale: 1, y: 0 }} exit={{ scale: 0.9, y: 30 }} className="glass w-full max-w-md p-10 rounded-[50px] border-white/10 relative shadow-[0_0_100px_rgba(168,85,247,0.1)]">
+                            <button onClick={() => setSelectedUserForAI(null)} className="absolute right-8 top-8 text-zinc-500 hover:text-white transition-colors">
+                                <X size={28} />
+                            </button>
+
+                            <div className="flex flex-col items-center text-center space-y-8">
+                                <div className="w-24 h-24 rounded-[32px] bg-purple-500/10 flex items-center justify-center border border-purple-500/20 shadow-[inset_0_0_20px_rgba(168,85,247,0.05)]">
+                                    <Cpu className="text-purple-500" size={40} />
+                                </div>
+                                <div className="space-y-2">
+                                    <h3 className="text-2xl font-black uppercase tracking-tighter text-white">AI Neural Trader</h3>
+                                    <p className="text-[10px] text-zinc-600 font-bold uppercase tracking-[0.3em] leading-relaxed italic">Autopilot Trading System for <br /><span className="text-purple-400 font-black">{selectedUserForAI.name}</span></p>
+                                </div>
+
+                                <div className="w-full space-y-6">
+                                    <div className="flex items-center justify-between p-4 bg-white/5 rounded-2xl border border-white/10">
+                                        <div className="text-left">
+                                            <p className="text-[10px] font-black uppercase tracking-widest text-zinc-400">System Status</p>
+                                            <p className="text-xs font-bold text-white uppercase mt-1">{aiActive ? "Online & Active" : "Offline / Standby"}</p>
+                                        </div>
+                                        <button
+                                            onClick={() => setAiActive(!aiActive)}
+                                            className={`w-14 h-8 rounded-full transition-all relative ${aiActive ? 'bg-purple-600' : 'bg-zinc-800'}`}
+                                        >
+                                            <div className={`absolute top-1 w-6 h-6 rounded-full bg-white transition-all ${aiActive ? 'right-1' : 'left-1'}`} />
+                                        </button>
+                                    </div>
+
+                                    <div className="space-y-3">
+                                        <label className="text-[10px] font-black text-zinc-500 uppercase tracking-[0.3em] block text-left ml-2">Target Profit Amount</label>
+                                        <div className="relative">
+                                            <input
+                                                type="number"
+                                                placeholder="0.00"
+                                                value={aiProfitAmt}
+                                                onChange={(e) => setAiProfitAmt(e.target.value)}
+                                                className="w-full bg-black/50 border-2 border-white/5 rounded-2xl py-6 px-8 text-3xl font-black text-center text-white focus:outline-none focus:border-purple-500 transition-all italic tracking-tighter"
+                                            />
+                                            <div className="absolute left-6 top-1/2 -translate-y-1/2 text-zinc-800 font-black text-xl italic pointer-events-none">$</div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div className="w-full grid grid-cols-2 gap-4">
+                                    <button
+                                        onClick={handleUpdateAISettings}
+                                        className="py-5 bg-white/5 border border-white/10 text-white rounded-[24px] font-black uppercase tracking-widest text-[10px] hover:bg-white/10 transition-all"
+                                    >
+                                        Sync Config
+                                    </button>
+                                    <button
+                                        onClick={handleExecuteAIProfit}
+                                        className="py-5 bg-purple-600 text-white rounded-[24px] font-black uppercase tracking-widest text-[10px] shadow-lg shadow-purple-600/20 hover:scale-[1.03] active:scale-95 transition-all"
+                                    >
+                                        Fire Profit
+                                    </button>
+                                </div>
                             </div>
                         </motion.div>
                     </motion.div>

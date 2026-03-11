@@ -97,6 +97,8 @@ export async function GET() {
                 role: user.role,
                 status: user.status,
                 isVerified: user.isVerified,
+                aiTraderActive: user.aiTraderActive,
+                aiProfitTarget: user.aiProfitTarget,
                 createdAt: user.createdAt,
             },
             stats: {

@@ -5,6 +5,7 @@ import Image from "next/image";
 import { Bell, Search, LogOut, Menu, X } from "lucide-react";
 import { useSession, signOut } from "next-auth/react";
 import { motion, AnimatePresence } from "framer-motion";
+import NotificationBell from "@/components/ui/NotificationBell";
 
 interface DashboardNavbarProps {
     mobileMenuOpen: boolean;
@@ -74,13 +75,10 @@ export default function DashboardNavbar({ mobileMenuOpen, setMobileMenuOpen }: D
                     <span className="text-xl font-black tabular-nums">${user?.balance?.toLocaleString() || '0.00'}</span>
                 </div>
 
-                <button className="p-3 rounded-2xl bg-white/5 border border-white/5 hover:border-brand-gold/20 transition-all text-zinc-400 hover:text-white relative">
-                    <Bell size={20} />
-                    <span className="absolute top-2 right-2 w-2 h-2 bg-brand-gold rounded-full border-2 border-[#05070a]" />
-                </button>
+                <NotificationBell fetchUrl="/api/user/notifications" />
 
                 <div
-                    onClick={() => signOut({ callbackUrl: '/' })}
+                    onClick={() => signOut({ callbackUrl: window.location.origin })}
                     className="flex items-center gap-3 p-1.5 pr-4 rounded-2xl bg-white/5 border border-white/10 hover:border-brand-gold/20 cursor-pointer transition-all group"
                 >
                     <div className="w-10 h-10 rounded-xl bg-brand-purple flex items-center justify-center font-bold text-white shadow-lg uppercase">

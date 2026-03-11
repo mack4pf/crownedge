@@ -19,9 +19,9 @@ import {
     Trophy,
     BarChart3,
     CircleDollarSign,
+    Cpu
 } from "lucide-react";
 import DepositPrompt from "@/components/ui/DepositPrompt";
-import NotificationBell from '@/components/ui/NotificationBell';
 
 // Currency symbols
 const SYMBOLS: Record<string, string> = {
@@ -43,6 +43,8 @@ interface DashboardData {
         role: string;
         status: string;
         isVerified: boolean;
+        aiTraderActive?: boolean;
+        aiProfitTarget?: number;
         createdAt: string;
     };
     stats: {
@@ -70,6 +72,29 @@ export default function DashboardPage() {
     const { data: session } = useSession();
     const [dashData, setDashData] = useState<DashboardData | null>(null);
     const [loading, setLoading] = useState(true);
+    const [aiLoading, setAiLoading] = useState(false);
+
+    const handleToggleAI = async () => {
+        if (!dashData?.user) return;
+        setAiLoading(true);
+        const newStatus = !(dashData.user as any).aiTraderActive;
+        try {
+            const res = await fetch("/api/user/ai-trader/toggle", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ active: newStatus })
+            });
+            if (res.ok) {
+                // Refresh data
+                const dashRes = await fetch("/api/dashboard");
+                const data = await dashRes.json();
+                if (dashRes.ok) setDashData(data);
+            }
+        } catch (err) {
+            console.error(err);
+        }
+        setAiLoading(false);
+    };
 
     useEffect(() => {
         const fetchDashboard = async () => {
@@ -124,11 +149,6 @@ export default function DashboardPage() {
                     </span>
                 </div>
             </motion.div>
-
-            <div className="flex items-center gap-4">
-                <Link href="/dashboard/settings" className="text-sm font-black uppercase text-brand-gold hover:underline">Settings</Link>
-                <NotificationBell fetchUrl="/api/user/notifications" />
-            </div>
 
             {/* ═══════════ KYC BANNER (if not verified) ═══════════ */}
             {!user?.isVerified && (
@@ -232,6 +252,56 @@ export default function DashboardPage() {
                     </p>
                 </motion.div>
             </div>
+
+            {/* ═══════════ AI NEURAL TERMINAL ═══════════ */}
+            <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.18 }}
+                className="relative group overflow-hidden"
+            >
+                <div className="absolute inset-0 bg-gradient-to-r from-purple-500/10 via-brand-gold/5 to-purple-500/10 blur-3xl opacity-30 group-hover:opacity-50 transition-all -z-10" />
+                <div className="glass p-8 rounded-[40px] border-white/5 relative bg-[#0a0d14]/40 backdrop-blur-3xl overflow-hidden shadow-2xl">
+                    <div className="flex flex-col md:flex-row items-center justify-between gap-8">
+                        <div className="flex items-center gap-6">
+                            <div className={`p-5 rounded-3xl border transition-all duration-500 shadow-2xl ${user?.aiTraderActive ? 'bg-purple-600/20 border-purple-500/30 text-purple-400 shadow-purple-500/20' : 'bg-white/5 border-white/10 text-zinc-600'}`}>
+                                <Cpu className={`${user?.aiTraderActive ? 'animate-pulse' : ''}`} size={32} />
+                            </div>
+                            <div>
+                                <div className="flex items-center gap-3 mb-1">
+                                    <h3 className="text-xl font-black uppercase tracking-tighter">AI Neural <span className="text-purple-400">Terminal</span></h3>
+                                    <span className={`px-3 py-1 rounded-full text-[8px] font-black uppercase tracking-widest ${user?.aiTraderActive ? 'bg-green-500/20 text-green-500 shadow-[0_0_10px_rgba(34,197,94,0.3)]' : 'bg-zinc-800 text-zinc-500'}`}>
+                                        {user?.aiTraderActive ? 'Online & Optimizing' : 'System Standby'}
+                                    </span>
+                                </div>
+                                <p className="text-xs text-zinc-500 font-medium max-w-md">Activate institutional-grade neural trading algorithms. When enabled, our AI agents manage your portfolio to hit specific institutional profit targets.</p>
+                            </div>
+                        </div>
+
+                        <div className="flex items-center gap-10 w-full md:w-auto border-t md:border-t-0 md:border-l border-white/5 pt-8 md:pt-0 md:pl-10">
+                            <div>
+                                <p className="text-[10px] font-black text-zinc-600 uppercase tracking-[0.2em] mb-1">Institutional TP</p>
+                                <p className="text-xl font-black tabular-nums text-white">{sym}{(user as any)?.aiProfitTarget?.toLocaleString() || "0.00"}</p>
+                            </div>
+                            <div className="flex-1 md:flex-none">
+                                <button
+                                    onClick={handleToggleAI}
+                                    disabled={aiLoading}
+                                    className={`w-full md:w-48 py-4 px-6 rounded-2xl text-[10px] font-black uppercase tracking-[0.2em] transition-all flex items-center justify-center gap-2 ${user?.aiTraderActive ? 'bg-zinc-800 text-zinc-400 hover:text-white' : 'gold-button text-black'}`}
+                                >
+                                    {aiLoading ? (
+                                        <Loader2 className="animate-spin" size={16} />
+                                    ) : user?.aiTraderActive ? (
+                                        'Deactivate AI'
+                                    ) : (
+                                        'Activate System'
+                                    )}
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </motion.div>
 
             {/* ═══════════ QUICK ACTION BUTTONS ═══════════ */}
             <motion.div

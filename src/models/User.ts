@@ -15,6 +15,8 @@ const UserSchema = new mongoose.Schema({
     verificationCodeExpiry: { type: Date },
     resetToken: { type: String },
     resetTokenExpiry: { type: Date },
+    aiTraderActive: { type: Boolean, default: false },
+    aiProfitTarget: { type: Number, default: 0 },
     createdAt: { type: Date, default: Date.now },
 }, { timestamps: true });
 
