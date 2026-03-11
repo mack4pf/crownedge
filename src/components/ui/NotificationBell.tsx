@@ -2,15 +2,16 @@ import { useEffect, useState } from 'react';
 import { Bell, RefreshCw } from 'lucide-react';
 import Link from 'next/link';
 
-interface Notification {
+interface AppNotification {
     id: string;
     title: string;
     message: string;
+    read: boolean;
     createdAt: string;
 }
 
 export default function NotificationBell({ fetchUrl }: { fetchUrl: string }) {
-    const [notifications, setNotifications] = useState<Notification[]>([]);
+    const [notifications, setNotifications] = useState<AppNotification[]>([]);
     const [unreadCount, setUnreadCount] = useState(0);
     const [loading, setLoading] = useState(false);
 
@@ -30,7 +31,7 @@ export default function NotificationBell({ fetchUrl }: { fetchUrl: string }) {
             try {
                 const res = await fetch(fetchUrl);
                 if (res.ok) {
-                    const data: Notification[] = await res.json();
+                    const data: AppNotification[] = await res.json();
                     setNotifications(data);
                     setUnreadCount(data.filter((n) => !n.read).length);
                     // Show native push for each new notification
