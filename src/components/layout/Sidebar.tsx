@@ -14,6 +14,8 @@ import {
     ArrowDownLeft,
     X,
     Loader2,
+    User,
+    ShieldCheck
 } from "lucide-react";
 import { useEffect, useState } from "react";
 
@@ -23,6 +25,7 @@ const NAV_ITEMS = [
     { icon: <Wallet size={20} />, label: "VIP Wallet & Deposits", href: "/dashboard/wallet" },
     { icon: <History size={20} />, label: "Trade History", href: "/dashboard/history" },
     { icon: <TrendingUp size={20} />, label: "VIP Signal Subscription", href: "/dashboard/subscription" },
+    { icon: <User size={20} />, label: "Account Profile & KYC", href: "/dashboard/profile" },
     { icon: <Settings size={20} />, label: "Settings", href: "/dashboard/settings" },
     { icon: <MessageSquare size={20} />, label: "Account Manager Chat", href: "/dashboard/chat" },
 ];

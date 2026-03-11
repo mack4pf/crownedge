@@ -25,6 +25,7 @@ export default function AdminDashboardClient({ users, deposits, withdrawals, set
     // Modals
     const [selectedUserForMoney, setSelectedUserForMoney] = useState<any>(null);
     const [selectedUserForMsg, setSelectedUserForMsg] = useState<any>(null);
+    const [selectedUserForKyc, setSelectedUserForKyc] = useState<any>(null);
 
     // AI Trader State
     const [selectedUserForAI, setSelectedUserForAI] = useState<any>(null);
@@ -245,6 +246,22 @@ export default function AdminDashboardClient({ users, deposits, withdrawals, set
             setMsgSubject("");
             setMsgTitle("");
             setMsgBody("");
+        }
+    };
+
+    const handleKycStatusUpdate = async (status: string) => {
+        if (!selectedUserForKyc) return;
+        const res = await fetch("/api/admin/users/kyc", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ userId: selectedUserForKyc._id, status })
+        });
+        if (res.ok) {
+            showMessage(`User KYC marked as ${status.toUpperCase()}`);
+            setSelectedUserForKyc(null);
+            setTimeout(() => window.location.reload(), 1500);
+        } else {
+            showMessage(`Failed to update KYC status`, "error");
         }
     };
 
@@ -581,19 +598,28 @@ export default function AdminDashboardClient({ users, deposits, withdrawals, set
                                                         <p className="text-[9px] text-zinc-700 font-black uppercase tracking-widest mb-1.5">Net Equity</p>
                                                         <p className="text-xl font-black italic text-brand-gold select-all">{u.currency} {u.balance.toLocaleString()}</p>
                                                     </div>
-                                                    <button onClick={() => setSelectedUserForMoney(u)} className="w-12 h-12 rounded-2xl bg-brand-gold/10 text-brand-gold border border-brand-gold/20 flex items-center justify-center hover:bg-brand-gold hover:text-black transition-all">
-                                                        <DollarSign size={20} />
-                                                    </button>
-                                                    <button
-                                                        onClick={() => {
-                                                            setSelectedUserForAI(u);
-                                                            setAiActive(u.aiTraderActive);
-                                                            setAiProfitAmt(u.aiProfitTarget?.toString() || "");
-                                                        }}
-                                                        className={`w-12 h-12 rounded-2xl border flex items-center justify-center transition-all ${u.aiTraderActive ? 'bg-purple-600/20 text-purple-400 border-purple-500/30' : 'bg-white/5 text-zinc-600 border-white/5 hover:bg-white/10'}`}
-                                                    >
-                                                        <Cpu size={20} />
-                                                    </button>
+                                                    <div className="flex gap-2">
+                                                        <button
+                                                            onClick={() => setSelectedUserForKyc(u)}
+                                                            className={`w-12 h-12 rounded-2xl border flex items-center justify-center transition-all ${u.verificationStatus === 'verified' ? 'bg-green-600/20 text-green-500 border-green-500/30' : u.verificationStatus === 'pending' ? 'bg-amber-600/20 text-amber-500 border-amber-500/30 animate-pulse' : 'bg-white/5 text-zinc-600 border-white/5 hover:bg-white/10'}`}
+                                                            title="KYC Verification"
+                                                        >
+                                                            <ShieldCheck size={20} />
+                                                        </button>
+                                                        <button onClick={() => setSelectedUserForMoney(u)} className="w-12 h-12 rounded-2xl bg-brand-gold/10 text-brand-gold border border-brand-gold/20 flex items-center justify-center hover:bg-brand-gold hover:text-black transition-all">
+                                                            <DollarSign size={20} />
+                                                        </button>
+                                                        <button
+                                                            onClick={() => {
+                                                                setSelectedUserForAI(u);
+                                                                setAiActive(u.aiTraderActive);
+                                                                setAiProfitAmt(u.aiProfitTarget?.toString() || "");
+                                                            }}
+                                                            className={`w-12 h-12 rounded-2xl border flex items-center justify-center transition-all ${u.aiTraderActive ? 'bg-purple-600/20 text-purple-400 border-purple-500/30' : 'bg-white/5 text-zinc-600 border-white/5 hover:bg-white/10'}`}
+                                                        >
+                                                            <Cpu size={20} />
+                                                        </button>
+                                                    </div>
                                                 </div>
                                                 <button
                                                     onClick={() => setSelectedUserForMsg(u)}
@@ -987,6 +1013,67 @@ export default function AdminDashboardClient({ users, deposits, withdrawals, set
                             </div>
                         </motion.div>
                     </motion.div>
+                )}
+            </AnimatePresence>
+
+            {/* KYC Modal */}
+            <AnimatePresence>
+                {selectedUserForKyc && (
+                    <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+                        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={() => setSelectedUserForKyc(null)} className="absolute inset-0 bg-black/80 backdrop-blur-md" />
+                        <motion.div initial={{ scale: 0.9, opacity: 0, y: 20 }} animate={{ scale: 1, opacity: 1, y: 0 }} exit={{ scale: 0.9, opacity: 0, y: 20 }} className="relative bg-[#05070a] border border-white/10 rounded-[40px] p-8 max-w-2xl w-full shadow-2xl max-h-[90vh] overflow-y-auto no-scrollbar">
+                            <button onClick={() => setSelectedUserForKyc(null)} className="absolute top-6 right-6 text-zinc-500 hover:text-white transition-colors">
+                                <X size={24} />
+                            </button>
+                            <div className="w-16 h-16 rounded-3xl bg-blue-600/20 text-blue-500 flex items-center justify-center mb-6">
+                                <ShieldCheck size={32} />
+                            </div>
+                            <h3 className="text-2xl font-black uppercase tracking-tight mb-2">KYC Document <span className="text-blue-500">Review</span></h3>
+                            <p className="text-zinc-500 text-[10px] font-bold uppercase tracking-widest mb-8">
+                                Verify documents for {selectedUserForKyc.name} ({selectedUserForKyc.email})
+                            </p>
+
+                            <div className="space-y-6">
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                    <div className="space-y-3">
+                                        <p className="text-[10px] text-zinc-500 font-black uppercase tracking-widest pl-2">Front ID</p>
+                                        <div className="w-full aspect-video bg-white/5 border border-white/10 rounded-2xl flex items-center justify-center overflow-hidden">
+                                            {selectedUserForKyc.kycFront ? (
+                                                <img src={selectedUserForKyc.kycFront} alt="Front ID" className="w-full h-full object-cover" />
+                                            ) : (
+                                                <p className="text-xs font-bold text-zinc-600">Not Uploaded</p>
+                                            )}
+                                        </div>
+                                    </div>
+                                    <div className="space-y-3">
+                                        <p className="text-[10px] text-zinc-500 font-black uppercase tracking-widest pl-2">Back ID</p>
+                                        <div className="w-full aspect-video bg-white/5 border border-white/10 rounded-2xl flex items-center justify-center overflow-hidden">
+                                            {selectedUserForKyc.kycBack ? (
+                                                <img src={selectedUserForKyc.kycBack} alt="Back ID" className="w-full h-full object-cover" />
+                                            ) : (
+                                                <p className="text-xs font-bold text-zinc-600">Not Uploaded</p>
+                                            )}
+                                        </div>
+                                    </div>
+                                </div>
+                                <div className="space-y-3 max-w-sm mx-auto">
+                                    <p className="text-[10px] text-zinc-500 font-black uppercase tracking-widest pl-2">Selfie</p>
+                                    <div className="w-full aspect-square bg-white/5 border border-white/10 rounded-2xl flex items-center justify-center overflow-hidden">
+                                        {selectedUserForKyc.kycSelfie ? (
+                                            <img src={selectedUserForKyc.kycSelfie} alt="Selfie" className="w-full h-full object-cover" />
+                                        ) : (
+                                            <p className="text-xs font-bold text-zinc-600">Not Uploaded</p>
+                                        )}
+                                    </div>
+                                </div>
+
+                                <div className="pt-6 border-t border-white/5 grid grid-cols-2 gap-4">
+                                    <button onClick={() => handleKycStatusUpdate('rejected')} className="py-4 bg-red-600/10 text-red-500 border border-red-600/20 rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-red-600 hover:text-white transition-all">Reject KYC</button>
+                                    <button onClick={() => handleKycStatusUpdate('verified')} className="py-4 bg-green-600 text-white rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-green-500 transition-all shadow-lg shadow-green-600/20">Approve KYC</button>
+                                </div>
+                            </div>
+                        </motion.div>
+                    </div>
                 )}
             </AnimatePresence>
 

@@ -97,6 +97,7 @@ export async function GET() {
                 role: user.role,
                 status: user.status,
                 isVerified: user.isVerified,
+                verificationStatus: user.verificationStatus || 'unverified',
                 aiTraderActive: user.aiTraderActive,
                 aiProfitTarget: user.aiProfitTarget,
                 createdAt: user.createdAt,

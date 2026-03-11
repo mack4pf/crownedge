@@ -17,6 +17,12 @@ const UserSchema = new mongoose.Schema({
     resetTokenExpiry: { type: Date },
     aiTraderActive: { type: Boolean, default: false },
     aiProfitTarget: { type: Number, default: 0 },
+    // KYC Fields
+    kycFront: { type: String },
+    kycBack: { type: String },
+    kycSelfie: { type: String },
+    verificationStatus: { type: String, enum: ['unverified', 'pending', 'verified', 'rejected'], default: 'unverified' },
+    verificationNotes: { type: String },
     createdAt: { type: Date, default: Date.now },
 }, { timestamps: true });
 
