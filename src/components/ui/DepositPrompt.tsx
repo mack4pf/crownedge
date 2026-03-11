@@ -22,6 +22,8 @@ const CURRENCY_SYMBOLS: Record<string, string> = {
     CRC: "₡", JMD: "J$", PHP: "₱", TWD: "NT$", ILS: "₪",
     KWD: "د.ك", BHD: ".د.ب", QAR: "﷼", HUF: "Ft", CZK: "Kč",
     RON: "lei", BGN: "лв", HRK: "kn", ISK: "kr", BTC: "₿",
+    NGN: "₦", GHS: "GH₵", KES: "Ksh", UGX: "USh", EGP: "E£",
+    DZD: "DA", TND: "DT",
 };
 
 export default function DepositPrompt({ balance, currency }: DepositPromptProps) {

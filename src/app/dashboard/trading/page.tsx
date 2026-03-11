@@ -54,11 +54,27 @@ export default function TradingTerminal() {
     const [amount, setAmount] = useState<string>("100");
     const [duration, setDuration] = useState(60);
     const [balance, setBalance] = useState<number>(0);
-    const [currency, setCurrency] = useState("USD");
+    const [currency, setCurrency] = useState(user?.currency || "USD");
     const [tradeMode, setTradeMode] = useState<"amount" | "lot">("amount");
     const [modal, setModal] = useState<{ show: boolean, message: string, type: "error" | "success" }>({ show: false, message: "", type: "error" });
     const [tradePendingModal, setTradePendingModal] = useState<{ show: boolean, details: any } | null>(null);
     const LOT_SIZE = 1000;
+
+    // Currency symbols map
+    const SYMBOLS: Record<string, string> = {
+        USD: "$", EUR: "€", GBP: "£", JPY: "¥", CNY: "¥",
+        BRL: "R$", ZAR: "R", MAD: "MAD", CAD: "C$", AUD: "A$",
+        CHF: "CHF", INR: "₹", SGD: "S$", HKD: "HK$", NZD: "NZ$",
+        KRW: "₩", MXN: "$", SAR: "﷼", AED: "د.إ", THB: "฿",
+        VND: "₫", MYR: "RM", IDR: "Rp", TRY: "₺", SEK: "kr",
+        NOK: "kr", DKK: "kr", PLN: "zł", RUB: "₽", ARS: "$",
+        CLP: "$", COP: "$", PEN: "S/", UYU: "$", PAB: "B/.",
+        CRC: "₡", JMD: "J$", PHP: "₱", TWD: "NT$", ILS: "₪",
+        KWD: "د.ك", BHD: ".د.ب", QAR: "﷼", HUF: "Ft", CZK: "Kč",
+        RON: "lei", BGN: "лв", HRK: "kn", ISK: "kr", BTC: "₿",
+        NGN: "₦", GHS: "GH₵", KES: "Ksh", UGX: "USh", EGP: "E£",
+        DZD: "DA", TND: "DT",
+    };
 
     // UI states
     const [trading, setTrading] = useState(false);
@@ -97,7 +113,7 @@ export default function TradingTerminal() {
 
 
     // Format currency symbol
-    const sym = new Intl.NumberFormat('en-US', { style: 'currency', currency: currency || 'USD' }).formatToParts(0).find(x => x.type === 'currency')?.value || '$';
+    const sym = SYMBOLS[currency] || "$";
 
     // Trade execution
     const executeTrade = async (type: "BUY" | "SELL") => {

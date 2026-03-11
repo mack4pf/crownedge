@@ -3,8 +3,9 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useState, useEffect } from "react";
-import { Menu, X, TrendingUp, Bitcoin, BarChart3, Cpu, Building2, LogIn, UserPlus } from "lucide-react";
+import { Menu, X, TrendingUp, Bitcoin, BarChart3, Cpu, Building2, LogIn, UserPlus, LogOut, ShieldAlert } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import { useSession, signOut } from "next-auth/react";
 
 const NAV_LINKS = [
     { href: "/markets", label: "Markets", icon: <BarChart3 size={20} /> },
@@ -17,6 +18,7 @@ const NAV_LINKS = [
 export default function Navbar() {
     const [isScrolled, setIsScrolled] = useState(false);
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+    const { data: session } = useSession();
 
     useEffect(() => {
         const handleScroll = () => {
@@ -60,8 +62,38 @@ export default function Navbar() {
 
                     {/* Desktop Auth */}
                     <div className="hidden md:flex items-center gap-6">
-                        <Link href="/login" className="text-xs font-black uppercase tracking-[0.2em] hover:text-brand-gold transition-colors">Login</Link>
-                        <Link href="/register" className="gold-button px-8 py-3 rounded-xl text-xs font-black uppercase tracking-[0.2em] shadow-xl shadow-brand-gold/10 hover:scale-105 active:scale-95 transition-all">Register</Link>
+                        {session ? (
+                            <>
+                                {session.user.role === 'admin' && (
+                                    <Link
+                                        href="/admin"
+                                        className="text-xs font-black uppercase tracking-[0.2em] text-brand-gold hover:brightness-110 transition-all flex items-center gap-2 px-4 py-2 bg-brand-gold/10 rounded-xl border border-brand-gold/20"
+                                    >
+                                        <ShieldAlert size={14} />
+                                        Admin Control
+                                    </Link>
+                                )}
+                                <Link
+                                    href="/dashboard"
+                                    className="text-xs font-black uppercase tracking-[0.2em] hover:text-brand-gold transition-colors flex items-center gap-2"
+                                >
+                                    <Cpu size={14} className="text-brand-gold" />
+                                    Terminal
+                                </Link>
+                                <button
+                                    onClick={() => signOut({ callbackUrl: '/' })}
+                                    className="bg-white/5 border border-white/10 px-8 py-3 rounded-xl text-xs font-black uppercase tracking-[0.2em] hover:bg-white/10 transition-all flex items-center gap-2"
+                                >
+                                    <LogOut size={14} />
+                                    Exit
+                                </button>
+                            </>
+                        ) : (
+                            <>
+                                <Link href="/login" className="text-xs font-black uppercase tracking-[0.2em] hover:text-brand-gold transition-colors">Login</Link>
+                                <Link href="/register" className="gold-button px-8 py-3 rounded-xl text-xs font-black uppercase tracking-[0.2em] shadow-xl shadow-brand-gold/10 hover:scale-105 active:scale-95 transition-all">Register</Link>
+                            </>
+                        )}
                     </div>
 
                     {/* Mobile Hamburger — in top navbar */}
@@ -184,22 +216,54 @@ export default function Navbar() {
                                 animate={{ opacity: 1, y: 0 }}
                                 transition={{ delay: 0.35 }}
                             >
-                                <Link
-                                    href="/login"
-                                    onClick={() => setMobileMenuOpen(false)}
-                                    className="flex items-center justify-center gap-3 w-full py-4 rounded-2xl border border-white/10 text-white hover:bg-white/5 transition-all text-xs font-black uppercase tracking-[0.2em]"
-                                >
-                                    <LogIn size={18} className="text-brand-gold" />
-                                    Login Terminal
-                                </Link>
-                                <Link
-                                    href="/register"
-                                    onClick={() => setMobileMenuOpen(false)}
-                                    className="gold-button flex items-center justify-center gap-3 w-full py-4 rounded-2xl text-xs font-black uppercase tracking-[0.2em] shadow-xl shadow-brand-gold/10"
-                                >
-                                    <UserPlus size={18} />
-                                    Apply for Access
-                                </Link>
+                                {session ? (
+                                    <>
+                                        {session.user.role === 'admin' && (
+                                            <Link
+                                                href="/admin"
+                                                onClick={() => setMobileMenuOpen(false)}
+                                                className="flex items-center justify-center gap-3 w-full py-4 rounded-2xl border border-brand-gold/30 bg-brand-gold/5 text-brand-gold text-xs font-black uppercase tracking-[0.2em]"
+                                            >
+                                                <ShieldAlert size={18} />
+                                                Admin Dashboard
+                                            </Link>
+                                        )}
+                                        <Link
+                                            href="/dashboard"
+                                            onClick={() => setMobileMenuOpen(false)}
+                                            className="gold-button flex items-center justify-center gap-3 w-full py-4 rounded-2xl text-xs font-black uppercase tracking-[0.2em] shadow-xl shadow-brand-gold/10"
+                                        >
+                                            <Cpu size={18} />
+                                            Go to Terminal
+                                        </Link>
+                                        <button
+                                            onClick={() => signOut({ callbackUrl: '/' })}
+                                            className="flex items-center justify-center gap-3 w-full py-4 rounded-2xl border border-white/10 text-zinc-400 hover:text-white transition-all text-xs font-black uppercase tracking-[0.2em]"
+                                        >
+                                            <LogOut size={18} />
+                                            Terminate Session
+                                        </button>
+                                    </>
+                                ) : (
+                                    <>
+                                        <Link
+                                            href="/login"
+                                            onClick={() => setMobileMenuOpen(false)}
+                                            className="flex items-center justify-center gap-3 w-full py-4 rounded-2xl border border-white/10 text-white hover:bg-white/5 transition-all text-xs font-black uppercase tracking-[0.2em]"
+                                        >
+                                            <LogIn size={18} className="text-brand-gold" />
+                                            Login Terminal
+                                        </Link>
+                                        <Link
+                                            href="/register"
+                                            onClick={() => setMobileMenuOpen(false)}
+                                            className="gold-button flex items-center justify-center gap-3 w-full py-4 rounded-2xl text-xs font-black uppercase tracking-[0.2em] shadow-xl shadow-brand-gold/10"
+                                        >
+                                            <UserPlus size={18} />
+                                            Apply for Access
+                                        </Link>
+                                    </>
+                                )}
                             </motion.div>
 
                             {/* Footer Badge */}

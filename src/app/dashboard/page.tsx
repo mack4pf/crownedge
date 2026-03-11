@@ -31,6 +31,8 @@ const SYMBOLS: Record<string, string> = {
     KRW: "₩", MXN: "$", SAR: "﷼", AED: "د.إ", THB: "฿",
     BTC: "₿", TRY: "₺", PLN: "zł", RUB: "₽", PHP: "₱",
     IDR: "Rp", MYR: "RM", VND: "₫", SEK: "kr", NOK: "kr",
+    NGN: "₦", GHS: "GH₵", KES: "Ksh", UGX: "USh", EGP: "E£",
+    DZD: "DA", TND: "DT",
 };
 
 interface DashboardData {

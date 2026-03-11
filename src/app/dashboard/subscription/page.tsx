@@ -1,11 +1,9 @@
-"use client";
-
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
 import { motion } from "framer-motion";
 import {
     Zap, Check, ShieldCheck,
-    Star, Crown, Gem, ArrowRight
+    Star, Crown, Gem, ArrowRight, Loader2
 } from "lucide-react";
 import { useRouter } from "next/navigation";
 
@@ -13,7 +11,7 @@ const PLANS = [
     {
         name: "Basic VIP",
         tier: "VIP 1",
-        price: 100,
+        price: 300,
         icon: <Star className="text-blue-400" size={32} />,
         features: [
             "3 Daily VIP Signals",
@@ -26,7 +24,7 @@ const PLANS = [
     {
         name: "Silver VIP",
         tier: "VIP 2",
-        price: 500,
+        price: 750,
         icon: <ShieldCheck className="text-zinc-300" size={32} />,
         features: [
             "10 Daily VIP Signals",
@@ -40,7 +38,7 @@ const PLANS = [
     {
         name: "Gold VIP",
         tier: "VIP 3",
-        price: 1500,
+        price: 2500,
         icon: <Crown className="text-brand-gold" size={32} />,
         features: [
             "Unlimited VIP Signals",
@@ -55,7 +53,7 @@ const PLANS = [
     {
         name: "Diamond VIP",
         tier: "VIP 4",
-        price: 3000,
+        price: 5000,
         icon: <Gem className="text-purple-400" size={32} />,
         features: [
             "Institutional Flow Data",
@@ -71,14 +69,57 @@ const PLANS = [
 export default function SubscriptionPage() {
     const { data: session }: any = useSession();
     const router = useRouter();
+    const [currency, setCurrency] = useState("USD");
+    const [rate, setRate] = useState(1);
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        const fetchCurrency = async () => {
+            try {
+                const res = await fetch("/api/dashboard");
+                if (res.ok) {
+                    const data = await res.json();
+                    const userCurr = data.user.currency || "USD";
+                    setCurrency(userCurr);
+
+                    if (userCurr !== "USD") {
+                        const rateRes = await fetch(`https://api.exchangerate-api.com/v4/latest/USD`);
+                        const rateData = await rateRes.json();
+                        if (rateData.rates[userCurr]) {
+                            setRate(rateData.rates[userCurr]);
+                        }
+                    }
+                }
+            } catch (err) {
+                console.error("Failed to load currency data:", err);
+            }
+            setLoading(false);
+        };
+        fetchCurrency();
+    }, []);
+
+    const formatCurrency = (amount: number) => {
+        const converted = Math.ceil(amount * rate);
+        return new Intl.NumberFormat('en-US', {
+            style: 'currency',
+            currency: currency,
+            minimumFractionDigits: 0,
+            maximumFractionDigits: 0
+        }).format(converted);
+    };
 
     const handleSubscribe = (amount: number) => {
-        // Redirect to wallet with amount pre-filled if possible, 
-        // or just to wallet page and explain they need to deposit the amount.
-        // The user said "create a deposit for the user", so I'll redirect them 
-        // to a deposit flow with the specific amount in state.
-        router.push(`/dashboard/wallet?amount=${amount}&ref=subscription`);
+        const localAmount = Math.ceil(amount * rate);
+        router.push(`/dashboard/wallet?amount=${localAmount}&ref=subscription`);
     };
+
+    if (loading) {
+        return (
+            <div className="flex items-center justify-center min-h-[60vh]">
+                <Loader2 className="animate-spin text-brand-gold" size={40} />
+            </div>
+        );
+    }
 
     return (
         <div className="space-y-12 pb-20">
@@ -132,7 +173,7 @@ export default function SubscriptionPage() {
                         </div>
 
                         <div className="flex items-baseline gap-2 mb-8">
-                            <span className="text-4xl font-black italic tracking-tighter">${plan.price}</span>
+                            <span className="text-4xl font-black italic tracking-tighter">{formatCurrency(plan.price)}</span>
                             <span className="text-xs text-zinc-500 font-bold uppercase tracking-widest">/ Monthly</span>
                         </div>
 
