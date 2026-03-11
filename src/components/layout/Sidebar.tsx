@@ -86,7 +86,7 @@ export default function Sidebar({ mobileMenuOpen, setMobileMenuOpen }: SidebarPr
                             onClick={() => setMobileMenuOpen(false)}
                             className={`flex items-center gap-4 px-4 py-3.5 rounded-2xl transition-all duration-300 group ${pathname === item.href
                                 ? "bg-brand-gold text-black shadow-lg shadow-brand-gold/20"
-                                : "text-zinc-500 hover:text-white hover:bg-white/5"
+                                : "text-zinc-500 hover:text-white hover:bg-[var(--card-bg)]"
                                 }`}
                         >
                             <span className={pathname === item.href ? "text-black" : "text-zinc-500 group-hover:text-brand-gold transition-colors"}>
@@ -108,7 +108,7 @@ export default function Sidebar({ mobileMenuOpen, setMobileMenuOpen }: SidebarPr
                             <h4 className="font-black text-lg mb-4" style={{ color: levelData.color }}>
                                 {levelData.level}
                             </h4>
-                            <div className="w-full bg-white/10 h-1.5 rounded-full mb-2 overflow-hidden">
+                            <div className="w-full bg-[var(--card-bg)] h-1.5 rounded-full mb-2 overflow-hidden">
                                 <div
                                     className="h-full rounded-full transition-all duration-700"
                                     style={{ width: `${levelData.progress}%`, backgroundColor: levelData.color }}
@@ -152,7 +152,7 @@ export default function Sidebar({ mobileMenuOpen, setMobileMenuOpen }: SidebarPr
     return (
         <>
             {/* Desktop Sidebar */}
-            <aside className="w-72 border-r border-white/5 bg-[#05070a] h-screen fixed left-0 top-0 pt-28 pb-10 px-6 flex-col justify-between hidden lg:flex z-30">
+            <aside className="w-72 border-r border-white/5 bg-[var(--background)] h-screen fixed left-0 top-0 pt-28 pb-10 px-6 flex-col justify-between hidden lg:flex z-30 transition-colors duration-300">
                 {sidebarContent}
             </aside>
 

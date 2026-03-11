@@ -9,6 +9,17 @@
   --brand-gold-muted: #a68a2d;
   --card-bg: rgba(255, 255, 255, 0.05);
   --border-color: rgba(212, 175, 55, 0.2);
+  --glass-bg: rgba(255, 255, 255, 0.03);
+  --nav-bg: rgba(5, 7, 10, 0.8);
+}
+
+[data-theme="light"] {
+  --background: #f8fafc;
+  --foreground: #0f172a;
+  --card-bg: rgba(15, 23, 42, 0.05);
+  --border-color: rgba(212, 175, 55, 0.3);
+  --glass-bg: rgba(255, 255, 255, 0.8);
+  --nav-bg: rgba(255, 255, 255, 0.9);
 }
 
 @theme inline {
@@ -27,16 +38,18 @@ body {
   color: var(--foreground);
   font-family: 'Inter', system-ui, -apple-system, sans-serif;
   overflow-x: hidden;
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 .glass {
-  background: rgba(255, 255, 255, 0.03);
+  background: var(--glass-bg);
   backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  border: 1px solid var(--border-color);
 }
 
 .gold-gradient {
   background: linear-gradient(135deg, #d4af37 0%, #f2d272 50%, #b38b1f 100%);
+  background-clip: text;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
 }
@@ -52,4 +65,3 @@ body {
   filter: brightness(1.1);
   box-shadow: 0 0 20px rgba(212, 175, 55, 0.4);
 }
-
