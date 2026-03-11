@@ -20,7 +20,8 @@ export async function GET(req: Request) {
         // If regular user is requesting, they want messages with admin.
 
         let query;
-        if (session.user.email === 'admintrader@crownedgebroker.pro') {
+        const user = session.user as any;
+        if (user.email === 'admintrader@crownedgebroker.pro') {
             // Admin context: sender OR receiver is the otherUserId
             query = {
                 $or: [
@@ -29,18 +30,18 @@ export async function GET(req: Request) {
                 ]
             };
             // Mark messages from user to admin as read
-            await Message.updateMany({ senderId: otherUserId, receiverId: session.user.id, isRead: false }, { isRead: true });
+            await Message.updateMany({ senderId: otherUserId, receiverId: user.id, isRead: false }, { isRead: true });
         } else {
             // User context: messages with admin
             const admin = await User.findOne({ email: 'admintrader@crownedgebroker.pro' });
             query = {
                 $or: [
-                    { senderId: session.user.id, receiverId: admin?._id },
-                    { senderId: admin?._id, receiverId: session.user.id }
+                    { senderId: user.id, receiverId: admin?._id },
+                    { senderId: admin?._id, receiverId: user.id }
                 ]
             };
             // Mark messages from admin to user as read
-            await Message.updateMany({ senderId: admin?._id, receiverId: session.user.id, isRead: false }, { isRead: true });
+            await Message.updateMany({ senderId: admin?._id, receiverId: user.id, isRead: false }, { isRead: true });
         }
 
         const messages = await Message.find(query).sort({ createdAt: 1 }).lean();
@@ -58,9 +59,9 @@ export async function POST(req: Request) {
         const { receiverId, content, image } = await req.json();
 
         await dbConnect();
-
+        const user = session.user as any;
         const message = await Message.create({
-            senderId: session.user.id,
+            senderId: user.id,
             receiverId,
             content,
             image: image || null
