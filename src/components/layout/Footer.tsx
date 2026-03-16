@@ -33,11 +33,11 @@ export default function Footer() {
                     <div>
                         <h5 className="font-bold text-foreground uppercase tracking-widest text-xs mb-8">Trading</h5>
                         <ul className="space-y-4 text-sm text-zinc-500 font-medium">
-                            <FooterLink href="#">Web Terminal</FooterLink>
-                            <FooterLink href="#">Mobile App</FooterLink>
-                            <FooterLink href="#">Account Types</FooterLink>
-                            <FooterLink href="#">Fee Schedule</FooterLink>
-                            <FooterLink href="#">Market Hours</FooterLink>
+                            <FooterLink href="/markets">Web Terminal</FooterLink>
+                            <FooterLink href="/platform">Institutional AI</FooterLink>
+                            <FooterLink href="/company">About Company</FooterLink>
+                            <FooterLink href="/faq">Support FAQ</FooterLink>
+                            <FooterLink href="/markets">Market Hours</FooterLink>
                         </ul>
                     </div>
 
@@ -55,11 +55,11 @@ export default function Footer() {
                     <div>
                         <h5 className="font-bold text-foreground uppercase tracking-widest text-xs mb-8">Legal</h5>
                         <ul className="space-y-4 text-sm text-zinc-500 font-medium">
-                            <FooterLink href="#">Privacy Policy</FooterLink>
-                            <FooterLink href="#">Terms & Conditions</FooterLink>
-                            <FooterLink href="#">Risk Disclosure</FooterLink>
-                            <FooterLink href="#">Cookie Policy</FooterLink>
-                            <FooterLink href="#">License & Regulation</FooterLink>
+                            <FooterLink href="/company">Privacy Policy</FooterLink>
+                            <FooterLink href="/company">Terms & Conditions</FooterLink>
+                            <FooterLink href="/company">Risk Disclosure</FooterLink>
+                            <FooterLink href="/company">Cookie Policy</FooterLink>
+                            <FooterLink href="/company">License & Regulation</FooterLink>
                         </ul>
                     </div>
                 </div>
