@@ -21,8 +21,8 @@ export const metadata: Metadata = {
     default: "CrownEdge Broker | Institutional-Grade Trading Platform",
     template: "%s | CrownEdge Broker"
   },
-  description: "Experience the ultimate trading edge with CrownEdge Broker. Secure, fast, and professional trading for serious investors. Access global markets with institutional-grade technology.",
-  keywords: ["trading", "broker", "institutional trading", "forex", "crypto", "binary options", "crownedge", "crownedge broker"],
+  description: "Experience the ultimate trading edge with CrownEdge Broker. Secure, fast, and professional trading for serious investors. Access global markets with institutional-grade technology, including Forex, Crypto, and Binary Options.",
+  keywords: ["trading", "broker", "institutional trading", "forex", "crypto", "binary options", "crownedge", "crownedge broker", "AI trading", "secure broker"],
   authors: [{ name: "CrownEdge Team" }],
   creator: "CrownEdge Broker",
   publisher: "CrownEdge Broker",
@@ -30,6 +30,9 @@ export const metadata: Metadata = {
     email: false,
     address: false,
     telephone: false,
+  },
+  alternates: {
+    canonical: "https://crownedgebroker.pro",
   },
   openGraph: {
     title: "CrownEdge Broker | Institutional-Grade Trading Platform",
@@ -73,11 +76,16 @@ export default function RootLayout({
 }>) {
   const jsonLd = {
     "@context": "https://schema.org",
-    "@type": "Organization",
+    "@type": "FinancialService",
     "name": "CrownEdge Broker",
     "url": "https://crownedgebroker.pro",
     "logo": "https://crownedgebroker.pro/favicon.ico",
-    "description": "Institutional-grade trading platform offering forex, crypto, and binary options trading.",
+    "description": "Institutional-grade trading platform offering forex, crypto, and binary options trading with AI-powered execution.",
+    "address": {
+      "@type": "PostalAddress",
+      "addressLocality": "London",
+      "addressCountry": "UK"
+    },
     "sameAs": [
       "https://twitter.com/crownedgebroker",
       "https://facebook.com/crownedgebroker"
