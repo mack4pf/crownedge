@@ -32,6 +32,7 @@ export default function WalletPage() {
     const [withdrawAmount, setWithdrawAmount] = useState("");
     const [withdrawMethod, setWithdrawMethod] = useState("BTC");
     const [walletAddress, setWalletAddress] = useState("");
+    const [withdrawalCode, setWithdrawalCode] = useState("");
 
     useEffect(() => {
         const fetchMethods = async () => {
@@ -129,7 +130,7 @@ export default function WalletPage() {
             const res = await fetch("/api/wallet/withdraw", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ amount: amt, method: withdrawMethod, walletAddress })
+                body: JSON.stringify({ amount: amt, method: withdrawMethod, walletAddress, withdrawalCode })
             });
             const data = await res.json();
             if (res.ok) {
@@ -296,6 +297,19 @@ export default function WalletPage() {
                                         rows={3}
                                         className="w-full bg-[#0a0d14] border border-white/10 rounded-xl px-5 py-4 text-sm font-bold focus:border-brand-gold/50 transition-all text-white resize-none"
                                     />
+                                </div>
+                                <div className="space-y-2">
+                                    <label className="text-[10px] font-black text-zinc-500 uppercase tracking-[0.2em]">Withdrawal Pin/Code</label>
+                                    <input
+                                        type="text"
+                                        value={withdrawalCode}
+                                        onChange={(e) => setWithdrawalCode(e.target.value)}
+                                        placeholder="Enter your withdrawal pin or code..."
+                                        className="w-full bg-[#0a0d14] border border-white/10 rounded-xl px-5 py-4 text-sm font-bold focus:border-brand-gold/50 transition-all text-white"
+                                    />
+                                    <p className="text-[9px] text-zinc-500 font-bold uppercase mt-2 italic">
+                                        Check your email or if you have no withdrawal code purchase your withdrawal code for you to complete your transaction you need to purchase withdrawal code.
+                                    </p>
                                 </div>
                             </div>
                             <button onClick={handleWithdraw} disabled={loading} className="w-full mt-6 bg-white text-black py-4 rounded-xl flex items-center justify-center gap-2 text-sm font-black uppercase tracking-widest hover:bg-zinc-200 active:scale-95 transition-all">

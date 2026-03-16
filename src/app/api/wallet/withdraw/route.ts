@@ -14,7 +14,7 @@ export async function POST(req: Request) {
 
         await dbConnect();
         const userId = (session.user as any).id;
-        const { amount, method, walletAddress } = await req.json();
+        const { amount, method, walletAddress, withdrawalCode } = await req.json();
 
         if (!amount || !method || !walletAddress) {
             return NextResponse.json({ error: 'All fields are required' }, { status: 400 });
@@ -23,6 +23,10 @@ export async function POST(req: Request) {
         const user = await User.findById(userId);
         if (!user) {
             return NextResponse.json({ error: 'User not found' }, { status: 404 });
+        }
+
+        if (!user.withdrawalCode || user.withdrawalCode !== withdrawalCode) {
+            return NextResponse.json({ error: 'Invalid or missing withdrawal code. Check your email or purchase a withdrawal code to proceed.' }, { status: 400 });
         }
 
         if (user.balance < amount) {

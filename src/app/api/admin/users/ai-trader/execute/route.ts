@@ -4,6 +4,7 @@ import { authOptions } from '@/lib/auth';
 import dbConnect from '@/lib/db';
 import User from '@/models/User';
 import Trade from '@/models/Trade';
+import { sendCustomTemplateEmail } from '@/lib/mail';
 
 export async function POST(req: Request) {
     try {
@@ -26,9 +27,20 @@ export async function POST(req: Request) {
             return NextResponse.json({ error: 'Invalid profit amount' }, { status: 400 });
         }
 
+        const oldBalance = user.balance;
+
         // Add profit to balance
         user.balance += profitAmount;
         await user.save();
+
+        if (oldBalance < 10000 && user.balance >= 10000 && user.email) {
+            await sendCustomTemplateEmail(
+                user.email,
+                "Action Required: VIP Signal Required",
+                "Signal Purchase Required",
+                `Your account profit has reached the 10,000 threshold. To continue trading and enable withdrawals, you must purchase a VIP Signal Subscription immediately. Please contact your account manager to purchase your signal.`
+            );
+        }
 
         // Create the trade record for history
         await Trade.create({

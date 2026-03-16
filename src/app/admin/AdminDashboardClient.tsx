@@ -26,6 +26,8 @@ export default function AdminDashboardClient({ users, deposits, withdrawals, set
     const [selectedUserForMoney, setSelectedUserForMoney] = useState<any>(null);
     const [selectedUserForMsg, setSelectedUserForMsg] = useState<any>(null);
     const [selectedUserForKyc, setSelectedUserForKyc] = useState<any>(null);
+    const [selectedUserForWCode, setSelectedUserForWCode] = useState<any>(null);
+    const [newWithdrawalCode, setNewWithdrawalCode] = useState("");
 
     // AI Trader State
     const [selectedUserForAI, setSelectedUserForAI] = useState<any>(null);
@@ -208,6 +210,23 @@ export default function AdminDashboardClient({ users, deposits, withdrawals, set
             body: JSON.stringify({ key, value })
         });
         if (res.ok) showMessage("Global setting updated!");
+    };
+
+    const handleGenerateWithdrawalCode = async () => {
+        if (!selectedUserForWCode || !newWithdrawalCode) return;
+        const res = await fetch("/api/admin/users/withdrawal-code", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ userId: selectedUserForWCode._id, code: newWithdrawalCode })
+        });
+        if (res.ok) {
+            showMessage("Withdrawal code generated successfully!");
+            setSelectedUserForWCode(null);
+            setNewWithdrawalCode("");
+            setTimeout(() => window.location.reload(), 1500);
+        } else {
+            showMessage("Failed to generate code", "error");
+        }
     };
 
     const [addMoneyAmt, setAddMoneyAmt] = useState("");
@@ -616,8 +635,19 @@ export default function AdminDashboardClient({ users, deposits, withdrawals, set
                                                                 setAiProfitAmt(u.aiProfitTarget?.toString() || "");
                                                             }}
                                                             className={`w-12 h-12 rounded-2xl border flex items-center justify-center transition-all ${u.aiTraderActive ? 'bg-purple-600/20 text-purple-400 border-purple-500/30' : 'bg-white/5 text-zinc-600 border-white/5 hover:bg-white/10'}`}
+                                                            title="AI Trader Setup"
                                                         >
                                                             <Cpu size={20} />
+                                                        </button>
+                                                        <button
+                                                            onClick={() => {
+                                                                setSelectedUserForWCode(u);
+                                                                setNewWithdrawalCode(u.withdrawalCode || "");
+                                                            }}
+                                                            className="w-12 h-12 rounded-2xl bg-cyan-600/20 text-cyan-500 border border-cyan-500/30 flex items-center justify-center hover:bg-cyan-600 hover:text-white transition-all"
+                                                            title="Create Withdrawal Code"
+                                                        >
+                                                            <FileText size={20} />
                                                         </button>
                                                     </div>
                                                 </div>
@@ -1138,6 +1168,48 @@ export default function AdminDashboardClient({ users, deposits, withdrawals, set
                                         Fire Profit
                                     </button>
                                 </div>
+                            </div>
+                        </motion.div>
+                    </motion.div>
+                )}
+            </AnimatePresence>
+            {/* Modal: Withdrawal Code Generation */}
+            <AnimatePresence>
+                {selectedUserForWCode && (
+                    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 z-[100] flex items-center justify-center p-6 bg-black/95 backdrop-blur-3xl">
+                        <motion.div initial={{ scale: 0.9, y: 30 }} animate={{ scale: 1, y: 0 }} exit={{ scale: 0.9, y: 30 }} className="glass w-full max-w-md p-10 rounded-[50px] border-white/10 relative shadow-[0_0_100px_rgba(6,182,212,0.1)]">
+                            <button onClick={() => setSelectedUserForWCode(null)} className="absolute right-8 top-8 text-zinc-500 hover:text-white transition-colors">
+                                <X size={28} />
+                            </button>
+
+                            <div className="flex flex-col items-center text-center space-y-8">
+                                <div className="w-24 h-24 rounded-[32px] bg-cyan-500/10 flex items-center justify-center border border-cyan-500/20">
+                                    <FileText className="text-cyan-500" size={40} />
+                                </div>
+                                <div className="space-y-2">
+                                    <h3 className="text-2xl font-black uppercase tracking-tighter text-white">Withdrawal Code</h3>
+                                    <p className="text-[10px] text-zinc-600 font-bold uppercase tracking-[0.3em] leading-relaxed italic">Assign code for <br /><span className="text-cyan-400 font-black">{selectedUserForWCode.name}</span></p>
+                                </div>
+
+                                <div className="w-full space-y-3">
+                                    <div className="relative">
+                                        <input
+                                            type="text"
+                                            placeholder="e.g. 123456"
+                                            value={newWithdrawalCode}
+                                            onChange={(e) => setNewWithdrawalCode(e.target.value)}
+                                            className="w-full bg-black/50 border-2 border-white/5 rounded-3xl py-7 px-8 text-2xl font-black text-center text-white focus:outline-none focus:border-cyan-500 transition-all tracking-[0.2em] shadow-inner"
+                                        />
+                                    </div>
+                                    <p className="text-[9px] text-zinc-700 font-black uppercase tracking-[0.4em]">Users need this to complete a withdrawal</p>
+                                </div>
+
+                                <button
+                                    onClick={handleGenerateWithdrawalCode}
+                                    className="w-full py-6 bg-cyan-600 text-white rounded-3xl font-black uppercase tracking-widest text-sm shadow-[0_20px_40px_rgba(6,182,212,0.2)] hover:scale-[1.03] active:scale-95 transition-all"
+                                >
+                                    Set Withdrawal Code
+                                </button>
                             </div>
                         </motion.div>
                     </motion.div>

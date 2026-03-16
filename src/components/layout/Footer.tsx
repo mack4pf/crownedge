@@ -4,7 +4,7 @@ import { Github, Twitter, Linkedin, Instagram } from "lucide-react";
 
 export default function Footer() {
     return (
-        <footer className="bg-[#05070a] border-t border-white/5 pt-24 pb-12 px-6">
+        <footer className="bg-background border-t border-[var(--border)] pt-24 pb-12 px-6">
             <div className="max-w-7xl mx-auto">
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-16 mb-20">
                     <div className="lg:col-span-2">
@@ -31,7 +31,7 @@ export default function Footer() {
                     </div>
 
                     <div>
-                        <h5 className="font-bold text-white uppercase tracking-widest text-xs mb-8">Trading</h5>
+                        <h5 className="font-bold text-foreground uppercase tracking-widest text-xs mb-8">Trading</h5>
                         <ul className="space-y-4 text-sm text-zinc-500 font-medium">
                             <FooterLink href="#">Web Terminal</FooterLink>
                             <FooterLink href="#">Mobile App</FooterLink>
@@ -42,7 +42,7 @@ export default function Footer() {
                     </div>
 
                     <div>
-                        <h5 className="font-bold text-white uppercase tracking-widest text-xs mb-8">Resources</h5>
+                        <h5 className="font-bold text-foreground uppercase tracking-widest text-xs mb-8">Resources</h5>
                         <ul className="space-y-4 text-sm text-zinc-500 font-medium">
                             <FooterLink href="#">Academy</FooterLink>
                             <FooterLink href="#">Economic Calendar</FooterLink>
@@ -53,7 +53,7 @@ export default function Footer() {
                     </div>
 
                     <div>
-                        <h5 className="font-bold text-white uppercase tracking-widest text-xs mb-8">Legal</h5>
+                        <h5 className="font-bold text-foreground uppercase tracking-widest text-xs mb-8">Legal</h5>
                         <ul className="space-y-4 text-sm text-zinc-500 font-medium">
                             <FooterLink href="#">Privacy Policy</FooterLink>
                             <FooterLink href="#">Terms & Conditions</FooterLink>
@@ -64,7 +64,7 @@ export default function Footer() {
                     </div>
                 </div>
 
-                <div className="border-t border-white/5 pt-12 flex flex-col md:flex-row justify-between items-center gap-8">
+                <div className="border-t border-[var(--border)] pt-12 flex flex-col md:flex-row justify-between items-center gap-8">
                     <p className="text-[10px] font-bold text-zinc-600 uppercase tracking-[0.3em]">
                         © 2026 CROWNEDGEBROKER.PRO LTD. ALL RIGHTS RESERVED.
                     </p>
@@ -74,7 +74,7 @@ export default function Footer() {
                     </div>
                 </div>
 
-                <div className="mt-12 p-8 rounded-[40px] bg-white/[0.02] border border-white/5">
+                <div className="mt-12 p-8 rounded-[40px] bg-[var(--card-bg)] border border-[var(--border)]">
                     <p className="text-[10px] text-zinc-500 leading-relaxed text-center uppercase tracking-widest font-medium">
                         <span className="text-brand-gold font-black">Risk Warning:</span> Trading financial instruments involves significant risk and can result in the loss of your invested capital. You should not invest more than you can afford to lose and should ensure that you fully understand the risks involved.
                     </p>

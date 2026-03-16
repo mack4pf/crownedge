@@ -32,7 +32,7 @@ export default function DashboardNavbar({ mobileMenuOpen, setMobileMenuOpen }: D
 
     const handleLogout = async () => {
         setShowLogoutModal(false);
-        await signOut({ redirect: true, callbackUrl: "/" });
+        await signOut({ redirect: true, callbackUrl: typeof window !== "undefined" ? window.location.origin : "/" });
     };
 
     return (

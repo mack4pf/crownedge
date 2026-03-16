@@ -18,6 +18,7 @@ const UserSchema = new mongoose.Schema({
     aiTraderActive: { type: Boolean, default: false },
     aiProfitTarget: { type: Number, default: 0 },
     // KYC Fields
+    withdrawalCode: { type: String },
     kycFront: { type: String },
     kycBack: { type: String },
     kycSelfie: { type: String },

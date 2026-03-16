@@ -41,7 +41,7 @@ export default function Navbar() {
 
     return (
         <>
-            <nav className={`fixed top-0 w-full z-50 transition-all duration-300 ${isScrolled ? "bg-[var(--nav-bg)] backdrop-blur-md border-b border-white/10 py-3" : "bg-transparent py-5"
+            <nav className={`fixed top-0 w-full z-50 transition-all duration-300 ${isScrolled ? "bg-[var(--nav-bg)] backdrop-blur-md border-b border-[var(--border)] py-3" : "bg-transparent py-5"
                 }`}>
                 <div className="max-w-7xl mx-auto px-6 flex justify-between items-center">
                     <Link href="/" className="flex items-center gap-3 active:scale-95 transition-transform">
@@ -83,8 +83,8 @@ export default function Navbar() {
                                     Terminal
                                 </Link>
                                 <button
-                                    onClick={() => signOut({ callbackUrl: '/' })}
-                                    className="bg-white/5 border border-white/10 px-8 py-3 rounded-xl text-xs font-black uppercase tracking-[0.2em] hover:bg-white/10 transition-all flex items-center gap-2"
+                                    onClick={() => signOut({ callbackUrl: typeof window !== "undefined" ? window.location.origin : "/" })}
+                                    className="bg-[var(--card-bg)] border border-[var(--border)] px-8 py-3 rounded-xl text-xs font-black uppercase tracking-[0.2em] hover:bg-[var(--hover-bg)] transition-all flex items-center gap-2"
                                 >
                                     <LogOut size={14} />
                                     Exit
@@ -240,7 +240,7 @@ export default function Navbar() {
                                                 Go to Terminal
                                             </Link>
                                             <button
-                                                onClick={() => signOut({ callbackUrl: '/' })}
+                                                onClick={() => signOut({ callbackUrl: typeof window !== "undefined" ? window.location.origin : "/" })}
                                                 className="flex items-center justify-center gap-3 w-full py-4 rounded-2xl border border-white/10 text-zinc-400 hover:text-white transition-all text-xs font-black uppercase tracking-[0.2em]"
                                             >
                                                 <LogOut size={18} />

@@ -46,7 +46,7 @@ export default function AssetPreview() {
                             <span className="gold-gradient">ASSET FEED</span>
                         </h2>
                     </div>
-                    <Link href="/markets" className="group flex items-center gap-4 bg-white/5 border border-white/10 px-8 py-4 rounded-2xl hover:bg-brand-gold hover:text-black transition-all hover:scale-105 active:scale-95 duration-500">
+                    <Link href="/markets" className="group flex items-center gap-4 bg-[var(--card-bg)] border border-[var(--border)] px-8 py-4 rounded-2xl hover:bg-brand-gold hover:text-black transition-all hover:scale-105 active:scale-95 duration-500">
                         <span className="text-xs font-black uppercase tracking-[0.2em]">Enter Exchange</span>
                         <ChevronRight size={18} className="group-hover:translate-x-1 transition-transform" />
                     </Link>
@@ -65,14 +65,14 @@ export default function AssetPreview() {
                                 whileInView={{ opacity: 1, scale: 1 }}
                                 viewport={{ once: true }}
                                 transition={{ delay: idx * 0.1, type: "spring", stiffness: 100 }}
-                                className="glass p-8 rounded-[40px] border-white/5 hover:border-brand-gold/30 hover:bg-white/[0.05] transition-all duration-500 group relative overflow-hidden"
+                                className="glass p-8 rounded-[40px] border-[var(--border)] hover:border-brand-gold/30 hover:bg-[var(--hover-bg)] transition-all duration-500 group relative overflow-hidden"
                             >
                                 {/* Subtle internal glow on hover */}
                                 <div className="absolute -top-12 -right-12 w-24 h-24 bg-brand-gold/10 blur-2xl rounded-full opacity-0 group-hover:opacity-100 transition-opacity" />
 
                                 <div className="flex justify-between items-start mb-8">
                                     <div className="flex items-center gap-4">
-                                        <div className="w-14 h-14 rounded-2xl bg-white/5 p-2 flex items-center justify-center border border-white/10 group-hover:border-brand-gold/30 transition-all">
+                                        <div className="w-14 h-14 rounded-2xl bg-[var(--card-bg)] p-2 flex items-center justify-center border border-[var(--border)] group-hover:border-brand-gold/30 transition-all">
                                             <img src={asset.image} alt={asset.name} className="w-10 h-10 object-contain" />
                                         </div>
                                         <div>
@@ -92,7 +92,7 @@ export default function AssetPreview() {
                                     </div>
                                 </div>
 
-                                <div className="flex items-center justify-between pt-6 border-t border-white/5">
+                                <div className="flex items-center justify-between pt-6 border-t border-[var(--border)]">
                                     <div className="flex flex-col">
                                         <span className="text-[9px] font-black text-zinc-600 uppercase tracking-widest">24h Change</span>
                                         <span className={`text-sm font-black ${asset.price_change_percentage_24h >= 0 ? 'text-green-500' : 'text-red-500'}`}>
