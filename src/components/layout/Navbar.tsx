@@ -3,7 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useState, useEffect } from "react";
-import { Menu, X, TrendingUp, Bitcoin, BarChart3, Cpu, Building2, LogIn, UserPlus, LogOut, ShieldAlert } from "lucide-react";
+import { Menu, X, TrendingUp, Bitcoin, BarChart3, Cpu, Building2, UserCircle, LogOut, ShieldAlert, Landmark, LogIn, UserPlus } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useSession, signOut } from "next-auth/react";
 import ThemeToggle from "@/components/ui/ThemeToggle";
@@ -13,6 +13,7 @@ const NAV_LINKS = [
     { href: "/crypto", label: "Crypto", icon: <Bitcoin size={20} /> },
     { href: "/forex", label: "Forex", icon: <TrendingUp size={20} /> },
     { href: "/platform", label: "Platform", icon: <Cpu size={20} /> },
+    { href: "/accounts", label: "Accounts", icon: <Landmark size={20} /> },
     { href: "/company", label: "Company", icon: <Building2 size={20} /> },
 ];
 

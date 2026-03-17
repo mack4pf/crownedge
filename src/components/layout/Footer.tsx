@@ -34,6 +34,7 @@ export default function Footer() {
                         <h5 className="font-bold text-foreground uppercase tracking-widest text-xs mb-8">Trading</h5>
                         <ul className="space-y-4 text-sm text-zinc-500 font-medium">
                             <FooterLink href="/markets">Web Terminal</FooterLink>
+                            <FooterLink href="/accounts">Account Tiers</FooterLink>
                             <FooterLink href="/platform">Institutional AI</FooterLink>
                             <FooterLink href="/company">About Company</FooterLink>
                             <FooterLink href="/faq">Support FAQ</FooterLink>
