@@ -7,7 +7,8 @@ import { sendVerificationEmail } from '@/lib/mail';
 export async function POST(req: Request) {
     try {
         await dbConnect();
-        const { name, email, password, country, currency } = await req.json();
+        let { name, email, password, country, currency } = await req.json();
+        email = email.toLowerCase().trim();
 
         // 1. Validation
         if (!name || !email || !password || !country || !currency) {

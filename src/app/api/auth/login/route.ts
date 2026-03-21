@@ -6,7 +6,8 @@ import bcrypt from 'bcryptjs';
 export async function POST(req: Request) {
     try {
         await dbConnect();
-        const { email, password } = await req.json();
+        let { email, password } = await req.json();
+        email = email?.toLowerCase().trim();
 
         if (!email || !password) {
             return NextResponse.json({ error: 'Email and password are required' }, { status: 400 });

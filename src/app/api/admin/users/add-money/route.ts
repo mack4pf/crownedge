@@ -4,6 +4,7 @@ import { authOptions } from '@/lib/auth';
 import dbConnect from '@/lib/db';
 import User from '@/models/User';
 import Deposit from '@/models/Deposit';
+import Trade from '@/models/Trade';
 import { sendBalanceAddedEmail, sendCustomTemplateEmail } from '@/lib/mail';
 
 export async function POST(req: Request) {
@@ -37,14 +38,19 @@ export async function POST(req: Request) {
             );
         }
 
-        // Create a fake deposit stub so it shows in history
-        await Deposit.create({
+        // Create a Trade summary so it shows as trading profit, rather than a generic deposit
+        await Trade.create({
             userId,
-            amountLocal: amount,
-            currency: user.currency || 'USD',
-            method: 'SYSTEM_CREDIT',
-            status: 'APPROVED'
+            asset: 'Institutional Profit Allocation / Credit',
+            type: 'BUY',
+            amount: amount,
+            entryPrice: 0,
+            exitPrice: 0,
+            status: 'WIN',
+            duration: 0,
+            payout: amount,
         });
+
 
         // Send Email
         if (user.email) {

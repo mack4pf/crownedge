@@ -16,13 +16,19 @@ export const authOptions: NextAuthOptions = {
                 password: { label: "Password", type: "password" }
             },
             async authorize(credentials) {
-                await dbConnect();
+                try {
+                    await dbConnect();
+                } catch (dbErr: any) {
+                    console.error("NextAuth authorize: Database connection failed:", dbErr.message);
+                    throw new Error("Secure trading servers are currently unavailable. Please try again later.");
+                }
 
                 if (!credentials?.email || !credentials?.password) {
                     throw new Error("Missing email or password");
                 }
 
-                const user = await User.findOne({ email: credentials.email }).select("+password");
+                const email = credentials.email.toLowerCase().trim();
+                const user = await User.findOne({ email }).select("+password");
 
                 if (!user) {
                     throw new Error("No user found with this email");

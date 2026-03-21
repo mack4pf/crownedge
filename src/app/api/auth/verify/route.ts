@@ -6,7 +6,8 @@ import { sendWelcomeEmail } from '@/lib/mail';
 export async function POST(req: Request) {
     try {
         await dbConnect();
-        const { email, code } = await req.json();
+        let { email, code } = await req.json();
+        email = email?.toLowerCase().trim();
 
         if (!email || !code) {
             return NextResponse.json({ error: 'Email and verification code are required' }, { status: 400 });
