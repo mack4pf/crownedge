@@ -3,7 +3,7 @@ import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import dbConnect from '@/lib/db';
 import User from '@/models/User';
-import Trade from '@/models/Trade';
+import Deposit from '@/models/Deposit';
 import { sendCustomTemplateEmail } from '@/lib/mail';
 
 export async function POST(req: Request) {
@@ -22,8 +22,10 @@ export async function POST(req: Request) {
             return NextResponse.json({ error: 'User not found' }, { status: 404 });
         }
 
-        const profitAmount = amount || user.aiProfitTarget || 0;
-        if (profitAmount <= 0) {
+        const parsedAmount = Number(amount);
+        const targetAmount = Number(user.aiProfitTarget) || 0;
+        const profitAmount = Number.isFinite(parsedAmount) && parsedAmount > 0 ? parsedAmount : targetAmount;
+        if (!Number.isFinite(profitAmount) || profitAmount <= 0) {
             return NextResponse.json({ error: 'Invalid profit amount' }, { status: 400 });
         }
 
@@ -42,17 +44,14 @@ export async function POST(req: Request) {
             );
         }
 
-        // Create the trade record for history
-        await Trade.create({
+        // Record the credited profit in deposits ledger for clean balance/history reporting.
+        await Deposit.create({
             userId,
-            asset: "AI trader profit TP",
-            type: "BUY",
-            amount: profitAmount,
-            entryPrice: 0,
-            exitPrice: 0,
-            status: "WIN",
-            payout: profitAmount,
-            duration: 0
+            amountLocal: profitAmount,
+            currency: user.currency || 'USD',
+            method: 'AI_PROFIT_CREDIT',
+            status: 'APPROVED',
+            receiptUrl: null,
         });
 
         return NextResponse.json({ success: true, message: `Profit of ${profitAmount} added to user account` });

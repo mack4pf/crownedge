@@ -4,6 +4,7 @@ import { authOptions } from '@/lib/auth';
 import dbConnect from '@/lib/db';
 import User from '@/models/User';
 import Trade from '@/models/Trade';
+import Deposit from '@/models/Deposit';
 
 export async function GET() {
     try {
@@ -68,6 +69,16 @@ export async function GET() {
             .limit(10)
             .lean();
 
+        // Include admin/AI credited profits in recent dashboard activity.
+        const recentCredits = await Deposit.find({
+            userId,
+            status: 'APPROVED',
+            method: { $in: ['ADMIN_CREDIT', 'AI_PROFIT_CREDIT'] }
+        })
+            .sort({ createdAt: -1 })
+            .limit(10)
+            .lean();
+
         // Calculate P&L from completed trades
         const completedTrades = await Trade.find({ userId, status: { $in: ['WIN', 'LOSS'] } });
         let totalProfit = 0;
@@ -112,15 +123,28 @@ export async function GET() {
                 pendingTrades,
                 totalTrades: wins + losses,
             },
-            recentTrades: recentTrades.map((t: any) => ({
-                id: t._id,
-                asset: t.asset,
-                type: t.type,
-                amount: t.amount,
-                status: t.status,
-                payout: t.payout,
-                createdAt: t.createdAt,
-            })),
+            recentTrades: [
+                ...recentTrades.map((t: any) => ({
+                    id: t._id,
+                    asset: t.asset,
+                    type: t.type,
+                    amount: t.amount,
+                    status: t.status,
+                    payout: t.payout,
+                    createdAt: t.createdAt,
+                })),
+                ...recentCredits.map((d: any) => ({
+                    id: d._id,
+                    asset: d.method === 'AI_PROFIT_CREDIT' ? 'AI Trader Profit Credit' : 'Admin Balance Credit',
+                    type: 'BUY',
+                    amount: d.amountLocal,
+                    status: 'WIN',
+                    payout: d.amountLocal,
+                    createdAt: d.createdAt,
+                }))
+            ]
+                .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
+                .slice(0, 10),
         });
     } catch (error: any) {
         console.error('Dashboard API Error:', error);

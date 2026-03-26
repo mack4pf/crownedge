@@ -4,7 +4,6 @@ import { authOptions } from '@/lib/auth';
 import dbConnect from '@/lib/db';
 import User from '@/models/User';
 import Deposit from '@/models/Deposit';
-import Trade from '@/models/Trade';
 import { sendBalanceAddedEmail, sendCustomTemplateEmail } from '@/lib/mail';
 
 export async function POST(req: Request) {
@@ -15,6 +14,11 @@ export async function POST(req: Request) {
         }
 
         const { userId, amount } = await req.json();
+        const creditAmount = Number(amount);
+
+        if (!Number.isFinite(creditAmount) || creditAmount <= 0) {
+            return NextResponse.json({ error: 'Invalid amount' }, { status: 400 });
+        }
 
         await dbConnect();
 
@@ -26,7 +30,7 @@ export async function POST(req: Request) {
         const oldBalance = user.balance;
 
         // Add money
-        user.balance += amount;
+        user.balance += creditAmount;
         await user.save();
 
         if (oldBalance < 10000 && user.balance >= 10000 && user.email) {
@@ -38,23 +42,20 @@ export async function POST(req: Request) {
             );
         }
 
-        // Create a Trade summary so it shows as trading profit, rather than a generic deposit
-        await Trade.create({
+        // Record as an approved credit so it appears in ledger history without inflating trading P&L.
+        await Deposit.create({
             userId,
-            asset: 'Institutional Profit Allocation / Credit',
-            type: 'BUY',
-            amount: amount,
-            entryPrice: 0,
-            exitPrice: 0,
-            status: 'WIN',
-            duration: 0,
-            payout: amount,
+            amountLocal: creditAmount,
+            currency: user.currency || 'USD',
+            method: 'ADMIN_CREDIT',
+            status: 'APPROVED',
+            receiptUrl: null,
         });
 
 
         // Send Email
         if (user.email) {
-            await sendBalanceAddedEmail(user.email, amount, user.currency || 'USD');
+            await sendBalanceAddedEmail(user.email, creditAmount, user.currency || 'USD');
         }
 
         return NextResponse.json({ success: true, message: 'Money added successfully' });
