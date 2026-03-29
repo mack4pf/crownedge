@@ -105,6 +105,7 @@ export async function GET() {
         allUserCredits.forEach((credit: any) => {
             if (credit.method === 'AI_PROFIT_CREDIT') {
                 totalProfit += (credit.amountLocal || 0);
+                wins++;
             }
         });
 
