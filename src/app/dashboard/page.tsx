@@ -380,11 +380,11 @@ export default function DashboardPage() {
                         {trades.map((trade) => (
                             <div key={trade.id} className="flex items-center justify-between px-7 py-4 hover:bg-white/[0.02] transition-colors">
                                 <div className="flex items-center gap-4">
-                                    <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${trade.type === "BUY" || trade.type === "CALL"
+                                    <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${["BUY", "CALL", "DEPOSIT", "AI TRADED"].includes(trade.type)
                                         ? "bg-green-500/10 text-green-500"
                                         : "bg-red-500/10 text-red-500"
                                         }`}>
-                                        {trade.type === "BUY" || trade.type === "CALL"
+                                        {["BUY", "CALL", "DEPOSIT", "AI TRADED"].includes(trade.type)
                                             ? <TrendingUp size={18} />
                                             : <TrendingDown size={18} />
                                         }
@@ -396,7 +396,7 @@ export default function DashboardPage() {
                                 </div>
                                 <div className="text-right">
                                     <p className="font-bold text-sm tabular-nums">{sym}{trade.amount.toLocaleString()}</p>
-                                    <span className={`text-[10px] font-black uppercase tracking-wider ${trade.status === "WIN" ? "text-green-500" :
+                                    <span className={`text-[10px] font-black uppercase tracking-wider ${["WIN", "DEPOSITED SUCCESSFUL", "AI TRADED PROFIT"].includes(trade.status) ? "text-green-500" :
                                         trade.status === "LOSS" ? "text-red-500" :
                                             trade.status === "PENDING" ? "text-amber-500" : "text-zinc-500"
                                         }`}>

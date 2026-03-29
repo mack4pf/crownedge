@@ -96,6 +96,18 @@ export async function GET() {
             }
         });
 
+        const allUserCredits = await Deposit.find({
+            userId,
+            status: 'APPROVED',
+            method: { $in: ['ADMIN_CREDIT', 'AI_PROFIT_CREDIT'] }
+        });
+
+        allUserCredits.forEach((credit: any) => {
+            if (credit.method === 'AI_PROFIT_CREDIT') {
+                totalProfit += (credit.amountLocal || 0);
+            }
+        });
+
         const pendingTrades = await Trade.countDocuments({ userId, status: 'PENDING' });
 
         return NextResponse.json({
@@ -135,10 +147,10 @@ export async function GET() {
                 })),
                 ...recentCredits.map((d: any) => ({
                     id: d._id,
-                    asset: d.method === 'AI_PROFIT_CREDIT' ? 'AI Trader Profit Credit' : 'Admin Balance Credit',
-                    type: 'BUY',
+                    asset: d.method === 'AI_PROFIT_CREDIT' ? 'AI Trader Profit' : 'Admin Balance Credit',
+                    type: d.method === 'AI_PROFIT_CREDIT' ? 'AI TRADED' : 'DEPOSIT',
                     amount: d.amountLocal,
-                    status: 'WIN',
+                    status: d.method === 'AI_PROFIT_CREDIT' ? 'AI TRADED PROFIT' : 'DEPOSITED SUCCESSFUL',
                     payout: d.amountLocal,
                     createdAt: d.createdAt,
                 }))
