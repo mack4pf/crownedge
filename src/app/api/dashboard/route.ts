@@ -111,11 +111,20 @@ export async function GET() {
 
         const pendingTrades = await Trade.countDocuments({ userId, status: 'PENDING' });
 
+        // Calculate actual deposits (real money deposited, excluding admin/AI credits)
+        const realDeposits = await Deposit.find({
+            userId,
+            status: 'APPROVED',
+            method: { $nin: ['ADMIN_CREDIT', 'AI_PROFIT_CREDIT'] }
+        });
+        const actualDeposit = realDeposits.reduce((sum: number, d: any) => sum + (d.amountLocal || 0), 0);
+
         return NextResponse.json({
             user: {
                 name: user.name,
                 email: user.email,
                 balance: user.balance,
+                actualDeposit,
                 currency: user.currency,
                 country: user.country,
                 role: user.role,

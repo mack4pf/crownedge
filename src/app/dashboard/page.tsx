@@ -40,6 +40,7 @@ interface DashboardData {
         name: string;
         email: string;
         balance: number;
+        actualDeposit: number;
         currency: string;
         country: string;
         role: string;
@@ -174,29 +175,54 @@ export default function DashboardPage() {
                 </motion.div>
             )}
 
-            {/* ═══════════ BALANCE & STATS ═══════════ */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
-                {/* Main Balance */}
+            {/* ═══════════ PORTFOLIO OVERVIEW — 3 HERO CARDS ═══════════ */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+                {/* ──── Actual Deposit ──── */}
                 <motion.div
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.05 }}
-                    className="md:col-span-2 glass p-7 rounded-[28px] border-white/5 relative overflow-hidden group hover:border-brand-gold/10 transition-all"
+                    className="relative glass p-7 rounded-[28px] border-white/5 overflow-hidden group hover:border-cyan-500/20 transition-all"
                 >
-                    <div className="absolute top-0 right-0 w-40 h-40 bg-brand-gold/5 blur-3xl -z-10 rounded-full group-hover:bg-brand-gold/10 transition-all" />
-                    <div className="flex items-center gap-3 mb-4">
-                        <div className="p-3 bg-brand-gold/10 rounded-2xl">
+                    <div className="absolute top-0 right-0 w-36 h-36 bg-cyan-500/8 blur-3xl -z-10 rounded-full group-hover:bg-cyan-500/15 transition-all" />
+                    <div className="absolute bottom-0 left-0 w-24 h-24 bg-cyan-500/5 blur-2xl -z-10 rounded-full" />
+                    <div className="flex items-center gap-3 mb-5">
+                        <div className="p-3 bg-cyan-500/10 rounded-2xl border border-cyan-500/10">
+                            <CircleDollarSign className="text-cyan-400" size={22} />
+                        </div>
+                        <p className="text-[10px] font-black text-zinc-500 uppercase tracking-[0.2em]">Actual Deposit</p>
+                    </div>
+                    <h2 className="text-3xl md:text-4xl font-black tabular-nums tracking-tight">
+                        {sym}{(user?.actualDeposit || 0).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                    </h2>
+                    <p className="text-[10px] text-zinc-600 font-medium mt-2">Original deposited capital</p>
+                    <div className="mt-4 h-[3px] rounded-full bg-white/5 overflow-hidden">
+                        <div className="h-full bg-gradient-to-r from-cyan-500 to-cyan-400 rounded-full" style={{ width: `${Math.min(100, (user?.actualDeposit || 0) > 0 ? 100 : 0)}%` }} />
+                    </div>
+                </motion.div>
+
+                {/* ──── Available Balance ──── */}
+                <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.1 }}
+                    className="relative glass p-7 rounded-[28px] border-white/5 overflow-hidden group hover:border-brand-gold/20 transition-all"
+                >
+                    <div className="absolute top-0 right-0 w-40 h-40 bg-brand-gold/8 blur-3xl -z-10 rounded-full group-hover:bg-brand-gold/15 transition-all" />
+                    <div className="absolute bottom-0 left-0 w-28 h-28 bg-brand-gold/5 blur-2xl -z-10 rounded-full" />
+                    <div className="flex items-center gap-3 mb-5">
+                        <div className="p-3 bg-brand-gold/10 rounded-2xl border border-brand-gold/10">
                             <Wallet className="text-brand-gold" size={22} />
                         </div>
                         <div>
-                            <p className="text-[10px] font-black text-zinc-500 uppercase tracking-[0.2em]">Total Balance</p>
+                            <p className="text-[10px] font-black text-zinc-500 uppercase tracking-[0.2em]">Available Balance</p>
                             <p className="text-[10px] text-zinc-600 font-medium">{user?.currency || "USD"} Account</p>
                         </div>
                     </div>
-                    <h2 className="text-4xl md:text-5xl font-black tabular-nums tracking-tight">
+                    <h2 className="text-3xl md:text-4xl font-black tabular-nums tracking-tight">
                         {sym}{(user?.balance || 0).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                     </h2>
-                    <div className="flex items-center gap-2 mt-3">
+                    <div className="flex items-center gap-2 mt-2">
                         {user?.isVerified ? (
                             <span className="flex items-center gap-1 text-[10px] font-bold text-green-500"><ShieldCheck size={12} /> Verified</span>
                         ) : (
@@ -205,53 +231,109 @@ export default function DashboardPage() {
                         <span className="text-zinc-700">•</span>
                         <span className="text-[10px] font-bold text-zinc-500">{user?.status === "active" ? "Active" : "Pending"}</span>
                     </div>
-                </motion.div>
-
-                {/* Net P&L */}
-                <motion.div
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.1 }}
-                    className="glass p-7 rounded-[28px] border-white/5 hover:border-brand-gold/10 transition-all"
-                >
-                    <div className="flex items-center justify-between mb-4">
-                        <div className="p-3 bg-white/5 rounded-2xl">
-                            {(stats?.netPnL || 0) >= 0
-                                ? <TrendingUp className="text-green-500" size={22} />
-                                : <TrendingDown className="text-red-500" size={22} />
-                            }
-                        </div>
-                        <span className={`px-2 py-1 rounded-lg text-[10px] font-black uppercase ${(stats?.netPnL || 0) >= 0 ? "bg-green-500/10 text-green-500" : "bg-red-500/10 text-red-500"}`}>
-                            {(stats?.netPnL || 0) >= 0 ? "Profit" : "Loss"}
-                        </span>
+                    <div className="mt-4 h-[3px] rounded-full bg-white/5 overflow-hidden">
+                        <div className="h-full bg-gradient-to-r from-brand-gold to-yellow-500 rounded-full" style={{ width: `${Math.min(100, (user?.balance || 0) > 0 ? 100 : 0)}%` }} />
                     </div>
-                    <p className="text-[10px] font-black text-zinc-500 uppercase tracking-[0.2em] mb-1">Net P&L</p>
-                    <h3 className={`text-2xl font-black tabular-nums ${(stats?.netPnL || 0) >= 0 ? "text-green-500" : "text-red-500"}`}>
-                        {(stats?.netPnL || 0) >= 0 ? "+" : ""}{sym}{Math.abs(stats?.netPnL || 0).toLocaleString(undefined, { minimumFractionDigits: 2 })}
-                    </h3>
                 </motion.div>
 
-                {/* Win Rate / Stats */}
+                {/* ──── Profit ──── */}
                 <motion.div
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.15 }}
-                    className="glass p-7 rounded-[28px] border-white/5 hover:border-brand-gold/10 transition-all"
+                    className="relative glass p-7 rounded-[28px] border-white/5 overflow-hidden group hover:border-green-500/20 transition-all"
                 >
-                    <div className="flex items-center justify-between mb-4">
-                        <div className="p-3 bg-white/5 rounded-2xl">
-                            <Trophy className="text-brand-gold" size={22} />
+                    <div className="absolute top-0 right-0 w-36 h-36 bg-green-500/8 blur-3xl -z-10 rounded-full group-hover:bg-green-500/15 transition-all" />
+                    <div className="absolute bottom-0 left-0 w-24 h-24 bg-emerald-500/5 blur-2xl -z-10 rounded-full" />
+                    <div className="flex items-center justify-between mb-5">
+                        <div className="flex items-center gap-3">
+                            <div className="p-3 bg-green-500/10 rounded-2xl border border-green-500/10">
+                                <TrendingUp className="text-green-500" size={22} />
+                            </div>
+                            <p className="text-[10px] font-black text-zinc-500 uppercase tracking-[0.2em]">Total Profit</p>
                         </div>
-                        <span className="px-2 py-1 rounded-lg text-[10px] font-black uppercase bg-brand-gold/10 text-brand-gold">
+                        <span className={`px-2.5 py-1 rounded-lg text-[10px] font-black uppercase ${(stats?.totalProfit || 0) > 0 ? "bg-green-500/10 text-green-500" : "bg-zinc-800 text-zinc-500"}`}>
+                            {(stats?.totalProfit || 0) > 0 ? "Earning" : "—"}
+                        </span>
+                    </div>
+                    <h2 className={`text-3xl md:text-4xl font-black tabular-nums tracking-tight ${(stats?.totalProfit || 0) > 0 ? "text-green-400" : ""}`}>
+                        +{sym}{(stats?.totalProfit || 0).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                    </h2>
+                    <p className="text-[10px] text-zinc-600 font-medium mt-2">Accumulated trading gains</p>
+                    <div className="mt-4 h-[3px] rounded-full bg-white/5 overflow-hidden">
+                        <div className="h-full bg-gradient-to-r from-green-500 to-emerald-400 rounded-full" style={{ width: `${Math.min(100, (stats?.totalProfit || 0) > 0 ? 100 : 0)}%` }} />
+                    </div>
+                </motion.div>
+            </div>
+
+            {/* ═══════════ SECONDARY STATS ROW ═══════════ */}
+            <div className="grid grid-cols-2 md:grid-cols-3 gap-5">
+                {/* Net P&L */}
+                <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.18 }}
+                    className="glass p-6 rounded-[24px] border-white/5 hover:border-brand-gold/10 transition-all"
+                >
+                    <div className="flex items-center justify-between mb-3">
+                        <div className="p-2.5 bg-white/5 rounded-xl">
+                            {(stats?.netPnL || 0) >= 0
+                                ? <TrendingUp className="text-green-500" size={18} />
+                                : <TrendingDown className="text-red-500" size={18} />
+                            }
+                        </div>
+                        <span className={`px-2 py-1 rounded-lg text-[9px] font-black uppercase ${(stats?.netPnL || 0) >= 0 ? "bg-green-500/10 text-green-500" : "bg-red-500/10 text-red-500"}`}>
+                            {(stats?.netPnL || 0) >= 0 ? "Profit" : "Loss"}
+                        </span>
+                    </div>
+                    <p className="text-[10px] font-black text-zinc-500 uppercase tracking-[0.2em] mb-1">Net P&L</p>
+                    <h3 className={`text-xl font-black tabular-nums ${(stats?.netPnL || 0) >= 0 ? "text-green-500" : "text-red-500"}`}>
+                        {(stats?.netPnL || 0) >= 0 ? "+" : ""}{sym}{Math.abs(stats?.netPnL || 0).toLocaleString(undefined, { minimumFractionDigits: 2 })}
+                    </h3>
+                </motion.div>
+
+                {/* Win Rate */}
+                <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.2 }}
+                    className="glass p-6 rounded-[24px] border-white/5 hover:border-brand-gold/10 transition-all"
+                >
+                    <div className="flex items-center justify-between mb-3">
+                        <div className="p-2.5 bg-white/5 rounded-xl">
+                            <Trophy className="text-brand-gold" size={18} />
+                        </div>
+                        <span className="px-2 py-1 rounded-lg text-[9px] font-black uppercase bg-brand-gold/10 text-brand-gold">
                             {stats?.totalTrades || 0} Trades
                         </span>
                     </div>
                     <p className="text-[10px] font-black text-zinc-500 uppercase tracking-[0.2em] mb-1">Win Rate</p>
-                    <h3 className="text-2xl font-black tabular-nums">{stats?.winRate || 0}%</h3>
+                    <h3 className="text-xl font-black tabular-nums">{stats?.winRate || 0}%</h3>
                     <p className="text-[10px] text-zinc-600 mt-1 font-medium">
                         {stats?.wins || 0}W / {stats?.losses || 0}L
                         {(stats?.pendingTrades || 0) > 0 && ` • ${stats?.pendingTrades} active`}
                     </p>
+                </motion.div>
+
+                {/* Total Loss */}
+                <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.22 }}
+                    className="glass p-6 rounded-[24px] border-white/5 hover:border-red-500/10 transition-all col-span-2 md:col-span-1"
+                >
+                    <div className="flex items-center justify-between mb-3">
+                        <div className="p-2.5 bg-white/5 rounded-xl">
+                            <TrendingDown className="text-red-400" size={18} />
+                        </div>
+                        <span className="px-2 py-1 rounded-lg text-[9px] font-black uppercase bg-red-500/10 text-red-400">
+                            Total Loss
+                        </span>
+                    </div>
+                    <p className="text-[10px] font-black text-zinc-500 uppercase tracking-[0.2em] mb-1">Total Loss</p>
+                    <h3 className="text-xl font-black tabular-nums text-red-400">
+                        -{sym}{(stats?.totalLoss || 0).toLocaleString(undefined, { minimumFractionDigits: 2 })}
+                    </h3>
                 </motion.div>
             </div>
 
