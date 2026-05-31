@@ -1,12 +1,18 @@
 import { Resend } from 'resend';
 
-const resend = new Resend(process.env.RESEND_API_KEY);
+const getResend = () => {
+    if (!process.env.RESEND_API_KEY) {
+        throw new Error('RESEND_API_KEY is not configured');
+    }
+
+    return new Resend(process.env.RESEND_API_KEY);
+};
 
 export const sendPasswordResetEmail = async (email: string, token: string) => {
     const resetLink = `${process.env.NEXT_PUBLIC_SITE_URL}/reset-password?token=${token}`;
 
     try {
-        await resend.emails.send({
+        await getResend().emails.send({
             from: process.env.RESEND_FROM_EMAIL || 'CrownEdge Broker <auth@crownedgebroker.pro>',
             to: email,
             subject: 'Reset your password | CrownEdge Broker',
@@ -32,7 +38,7 @@ export const sendPasswordResetEmail = async (email: string, token: string) => {
 
 export const sendVerificationEmail = async (email: string, code: string) => {
     try {
-        await resend.emails.send({
+        await getResend().emails.send({
             from: process.env.RESEND_FROM_EMAIL || 'CrownEdge Broker <auth@crownedgebroker.pro>',
             to: email,
             subject: 'Verify your account | CrownEdge Broker',
@@ -65,7 +71,7 @@ export const sendVerificationEmail = async (email: string, code: string) => {
 
 export const sendWelcomeEmail = async (email: string, name: string) => {
     try {
-        await resend.emails.send({
+        await getResend().emails.send({
             from: process.env.RESEND_FROM_EMAIL || 'CrownEdge Broker <auth@crownedgebroker.pro>',
             to: email,
             subject: 'Welcome to CrownEdge Broker',
@@ -89,7 +95,7 @@ export const sendWelcomeEmail = async (email: string, name: string) => {
 
 export const sendDepositPendingEmail = async (email: string, amount: string | number, method: string) => {
     try {
-        await resend.emails.send({
+        await getResend().emails.send({
             from: process.env.RESEND_FROM_EMAIL || 'CrownEdge Broker <auth@crownedgebroker.pro>',
             to: email,
             subject: 'Deposit Received - Pending Verification | CrownEdge Broker',
@@ -115,7 +121,7 @@ export const sendDepositPendingEmail = async (email: string, amount: string | nu
 
 export const sendDepositApprovedEmail = async (email: string, amount: string | number) => {
     try {
-        await resend.emails.send({
+        await getResend().emails.send({
             from: process.env.RESEND_FROM_EMAIL || 'CrownEdge Broker <auth@crownedgebroker.pro>',
             to: email,
             subject: 'Deposit Approved! Funds Credited | CrownEdge Broker',
@@ -140,7 +146,7 @@ export const sendDepositApprovedEmail = async (email: string, amount: string | n
 
 export const sendBalanceAddedEmail = async (email: string, amount: string | number, currency: string) => {
     try {
-        await resend.emails.send({
+        await getResend().emails.send({
             from: process.env.RESEND_FROM_EMAIL || 'CrownEdge Broker <auth@crownedgebroker.pro>',
             to: email,
             subject: 'Account Credited | CrownEdge Broker',
@@ -164,7 +170,7 @@ export const sendBalanceAddedEmail = async (email: string, amount: string | numb
 
 export const sendCustomTemplateEmail = async (email: string, subject: string, title: string, body: string) => {
     try {
-        await resend.emails.send({
+        await getResend().emails.send({
             from: process.env.RESEND_FROM_EMAIL || 'CrownEdge Broker <support@crownedgebroker.pro>',
             to: email,
             subject: `${subject} | CrownEdge Broker`,
@@ -190,7 +196,7 @@ export const sendCustomTemplateEmail = async (email: string, subject: string, ti
 
 export const sendChatPendingEmail = async (email: string) => {
     try {
-        await resend.emails.send({
+        await getResend().emails.send({
             from: process.env.RESEND_FROM_EMAIL || 'CrownEdge Broker <support@crownedgebroker.pro>',
             to: email,
             subject: 'New Unread Message from Account Manager | CrownEdge Broker',
