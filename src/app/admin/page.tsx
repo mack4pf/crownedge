@@ -27,6 +27,19 @@ export default async function AdminDashboardPage() {
     const users = await User.find({ role: { $ne: 'admin' } }).sort({ createdAt: -1 }).lean();
     const deposits = await Deposit.find().populate('userId', 'name email').sort({ createdAt: -1 }).lean();
     const withdrawals = await Withdrawal.find().populate('userId', 'name email').sort({ createdAt: -1 }).lean();
+    const requiredSettings = [
+        { key: 'telegram_contact', value: 'crownedgebroker', description: 'Telegram username or link' },
+        { key: 'whatsapp_number', value: '+1234567890', description: 'WhatsApp contact number' },
+        { key: 'subscription_basic_vip_price', value: '500', description: 'Basic VIP monthly price in USD' },
+        { key: 'subscription_silver_vip_price', value: '750', description: 'Silver VIP monthly price in USD' },
+        { key: 'subscription_gold_vip_price', value: '2500', description: 'Gold VIP monthly price in USD' },
+        { key: 'subscription_diamond_vip_price', value: '5000', description: 'Diamond VIP monthly price in USD' },
+    ];
+
+    for (const setting of requiredSettings) {
+        await Setting.findOneAndUpdate({ key: setting.key }, { $setOnInsert: setting }, { upsert: true });
+    }
+
     const settings = await Setting.find().lean();
 
     // Mongoose strings to primitives for client component

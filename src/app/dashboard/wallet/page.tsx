@@ -51,6 +51,14 @@ export default function WalletPage() {
         fetchMethods();
     }, []);
 
+    useEffect(() => {
+        const queryAmount = new URLSearchParams(window.location.search).get("amount");
+        if (queryAmount && !Number.isNaN(Number(queryAmount))) {
+            setActiveView("DEPOSIT");
+            setAmount(queryAmount);
+        }
+    }, []);
+
     const getPaymentDetails = () => {
         switch (selectedMethod) {
             case "BTC": return { title: "Bitcoin Address", value: methods.payment_btc || "Loading..." };

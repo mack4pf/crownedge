@@ -11,9 +11,10 @@ import { useRouter } from "next/navigation";
 
 const PLANS = [
     {
+        priceKey: "basicVip",
         name: "Basic VIP",
         tier: "VIP 1",
-        price: 300,
+        price: 500,
         icon: <Star className="text-blue-400" size={32} />,
         features: [
             "3 Daily VIP Signals",
@@ -24,6 +25,7 @@ const PLANS = [
         color: "blue"
     },
     {
+        priceKey: "silverVip",
         name: "Silver VIP",
         tier: "VIP 2",
         price: 750,
@@ -38,6 +40,7 @@ const PLANS = [
         color: "zinc"
     },
     {
+        priceKey: "goldVip",
         name: "Gold VIP",
         tier: "VIP 3",
         price: 2500,
@@ -53,6 +56,7 @@ const PLANS = [
         popular: true
     },
     {
+        priceKey: "diamondVip",
         name: "Diamond VIP",
         tier: "VIP 4",
         price: 5000,
@@ -73,6 +77,7 @@ export default function SubscriptionPage() {
     const router = useRouter();
     const [currency, setCurrency] = useState("USD");
     const [rate, setRate] = useState(1);
+    const [plans, setPlans] = useState(PLANS);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
@@ -91,6 +96,15 @@ export default function SubscriptionPage() {
                             setRate(rateData.rates[userCurr]);
                         }
                     }
+                }
+
+                const settingsRes = await fetch("/api/settings/public");
+                if (settingsRes.ok) {
+                    const settings = await settingsRes.json();
+                    setPlans(PLANS.map((plan) => ({
+                        ...plan,
+                        price: Math.max(Number(settings.subscriptionPrices?.[plan.priceKey]) || plan.price, 500)
+                    })));
                 }
             } catch (err) {
                 console.error("Failed to load currency data:", err);
@@ -152,7 +166,7 @@ export default function SubscriptionPage() {
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                {PLANS.map((plan, idx) => (
+                {plans.map((plan, idx) => (
                     <motion.div
                         key={idx}
                         initial={{ opacity: 0, scale: 0.9 }}

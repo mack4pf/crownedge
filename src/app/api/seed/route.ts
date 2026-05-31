@@ -33,7 +33,12 @@ export async function GET() {
 
         // Ensure default settings exist
         const DEFAULTS = [
+            { key: 'telegram_contact', value: 'crownedgebroker', description: 'Telegram username or link' },
             { key: 'whatsapp_number', value: '+1234567890', description: 'WhatsApp contact number' },
+            { key: 'subscription_basic_vip_price', value: '500', description: 'Basic VIP monthly price in USD' },
+            { key: 'subscription_silver_vip_price', value: '750', description: 'Silver VIP monthly price in USD' },
+            { key: 'subscription_gold_vip_price', value: '2500', description: 'Gold VIP monthly price in USD' },
+            { key: 'subscription_diamond_vip_price', value: '5000', description: 'Diamond VIP monthly price in USD' },
             { key: 'payment_btc', value: '1BvBMSEYstWetqTFn5Au4m4GFg7xJaNVN2', description: 'Bitcoin Address' },
             { key: 'payment_eth', value: '0x32Be343B94f860124dC4fEe278FDCBD38C102D88', description: 'Ethereum Address' },
             { key: 'payment_usdt', value: 'T9yD14Nj9j7xAB4dbGeiX9h8unkKzPGEW2', description: 'USDT TRC20 Address' },
